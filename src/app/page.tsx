@@ -41,7 +41,7 @@ export default function DashboardPage() {
 
         {/* Dashboard Body */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-7 max-w-7xl mx-auto w-full">
-          {/* Welcome & Action Banner - Philippe Noukoué (Cameroun) */}
+          {/* Welcome & Action Banner - Philippe NOUGOUE (Cameroun) */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-2xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-6 text-white shadow-lg shadow-blue-500/15">
             <div className="space-y-1.5">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md">
@@ -49,7 +49,7 @@ export default function DashboardPage() {
                 <span>PNO Facture Pro • Cameroun (Douala & Yaoundé)</span>
               </div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
-                Bonjour, Philippe 👋
+                Bonjour, Philippe NOUGOUE 👋
               </h1>
               <p className="text-xs sm:text-sm text-blue-100 max-w-xl">
                 Voici le bilan de votre facturation PNO Solutions pour ce mois d'octobre 2026. Vous avez{" "}

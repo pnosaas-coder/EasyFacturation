@@ -17,11 +17,11 @@ export default function SettingsPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Form states - Philippe Noukoué & Cameroun
-  const [managerName, setManagerName] = useState("Philippe Noukoué");
+  // Form states - Philippe NOUGOUE & Cameroun
+  const [managerName, setManagerName] = useState("Philippe NOUGOUE");
   const [companyName, setCompanyName] = useState("PNO Solutions Cameroun S.A.R.L");
   const [email, setEmail] = useState("contact@pno-cameroun.cm");
-  const [phone, setPhone] = useState("+237 6 77 12 34 56");
+  const [phone, setPhone] = useState("+237 677481161 / +237 691114908");
   const [country, setCountry] = useState("CM");
   const [taxId, setTaxId] = useState("NIU M052112345678A");
   const [rccm, setRccm] = useState("RC/DLA/2024/B/1234");
@@ -32,8 +32,8 @@ export default function SettingsPage() {
   const [defaultTaxRate, setDefaultTaxRate] = useState("19.25");
   const [paymentTermsDays, setPaymentTermsDays] = useState("30");
 
-  const [mtnPhone, setMtnPhone] = useState("+237 6 77 12 34 56");
-  const [omPhone, setOmPhone] = useState("+237 6 99 87 65 43");
+  const [mtnPhone, setMtnPhone] = useState("+237 677481161");
+  const [omPhone, setOmPhone] = useState("+237 691114908");
   const [bankRib, setBankRib] = useState("CM21 10005 00012 01234567890 45 (Afriland First Bank)");
 
   const handleSave = (e: React.FormEvent) => {
@@ -61,7 +61,7 @@ export default function SettingsPage() {
                 Paramètres de facturation (Cameroun)
               </h1>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Gérant : <strong>Philippe Noukoué</strong> • Mentions légales Cameroun, TVA 19,25% & Mobile Money.
+                Gérant : <strong>Philippe NOUGOUE</strong> • Mentions légales Cameroun, TVA 19,25% & Mobile Money.
               </p>
             </div>
 

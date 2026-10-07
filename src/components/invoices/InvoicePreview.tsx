@@ -43,7 +43,7 @@ export function InvoicePreview({
   invoiceNumber,
   sellerName = "PNO Solutions Cameroun S.A.R.L",
   sellerEmail = "contact@pno-cameroun.cm",
-  sellerPhone = "+237 6 77 12 34 56",
+  sellerPhone = "+237 677481161 / +237 691114908",
   sellerAddress = "Boulevard de la Liberté, Akwa, Douala, Cameroun",
   sellerTaxId = "NIU M052112345678A",
   sellerRccm = "RC/DLA/2024/B/1234",
@@ -60,8 +60,8 @@ export function InvoicePreview({
   taxTotal,
   total,
   paymentInstructions = {
-    mtnMoMoPhone: "+237 6 77 12 34 56 (MTN MoMo)",
-    orangeMoneyPhone: "+237 6 99 87 65 43 (Orange Money)",
+    mtnMoMoPhone: "+237 677481161 (MTN MoMo)",
+    orangeMoneyPhone: "+237 691114908 (Orange Money)",
     bankRib: "CM21 10005 00012 01234567890 45 (Afriland First Bank)",
   },
 }: InvoicePreviewProps) {
@@ -240,13 +240,13 @@ export function InvoicePreview({
           </div>
         </div>
 
-        {/* Signature & Cachet : Philippe Noukoué */}
+        {/* Signature & Cachet : Philippe NOUGOUE */}
         <div className="flex flex-col items-end justify-between">
           <span className="font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px]">
             Pour PNO Solutions Cameroun :
           </span>
           <div className="mt-3 font-serif italic text-base font-bold text-slate-900 dark:text-slate-100">
-            Philippe Noukoué
+            Philippe NOUGOUE
           </div>
           <span className="text-[10px] text-slate-400 font-medium">Gérant Fondateur</span>
         </div>

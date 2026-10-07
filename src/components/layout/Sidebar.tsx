@@ -255,7 +255,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
           </div>
 
-          {/* User Profile Card: Philippe Noukoué - Cameroun */}
+          {/* User Profile Card: Philippe NOUGOUE - Cameroun */}
           <div className="group/profile flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50/80 p-2.5 transition-all duration-200 hover:border-blue-300 hover:bg-white hover:shadow-md hover:shadow-blue-500/10 dark:border-slate-800 dark:bg-slate-800/50 dark:hover:border-slate-700">
             <div className="flex items-center gap-2.5 overflow-hidden">
               <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-xs font-bold text-white shadow-xs transition-transform duration-200 group-hover/profile:scale-105">
@@ -263,7 +263,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               </div>
               <div className="flex flex-col truncate">
                 <span className="truncate text-xs font-bold text-slate-800 dark:text-slate-100 group-hover/profile:text-blue-600 transition-colors">
-                  Philippe Noukoué
+                  Philippe NOUGOUE
                 </span>
                 <span className="truncate text-[10px] text-slate-500 dark:text-slate-400">
                   PNO Solutions Cameroun

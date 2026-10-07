@@ -55,7 +55,7 @@ Le flux imposé est conservé : UI d'après captures → interactivité en donn�
 
 **Factures** :
 - Liste avec onglets par statut et compteurs (comme la capture de la landing), recherche (numéro ou client), filtres de dates, tri et pagination. Les filtres vivent dans l'URL.
-- Création et édition en deux panneaux avec **aperçu en direct** (comme la capture « Create Invoice »), toggle « Afficher l'aperçu », lignes dynamiques, TVA 18 % par défaut (taux modifiable par ligne), remise globale (% ou montant), totaux calculés en direct.
+- Création et édition en deux panneaux avec **aperçu en direct** (comme la capture « Create Invoice »), toggle « Afficher l'aperçu », lignes dynamiques, TVA camerounaise 19,25 % par défaut (taux modifiable par ligne), remise globale (% ou montant), totaux calculés en direct.
 - Le sélecteur « Standard | Récurrente » de la capture bascule vers la création d'un modèle récurrent.
 - Page détail avec aperçu, paiements, historique (timeline) et actions : envoyer par email, télécharger le PDF, copier le lien public, partager sur WhatsApp, enregistrer un paiement, marquer payée, relancer, dupliquer, annuler, supprimer (brouillon uniquement), régénérer le lien public.
 
@@ -149,16 +149,18 @@ Ces définitions sont documentées dans le code et rappelées en infobulle dans 
 - **Montant en attente** : somme des `balance_due` des factures `sent` et `partial` à date, en retard inclus. Ce KPI ne dépend pas de la période.
 - **En retard** : la part du montant en attente dont l'échéance est dépassée, avec le nombre de factures concernées.
 
-### 3.5 Spécificités du marché africain
+### 3.5 Spécificités du marché africain (Cameroun & CEMAC)
 
-- **Affichage** : `1 250 000 FCFA` (`Intl.NumberFormat('fr-FR')`). Dans le PDF, l'espace fine U+202F est remplacée par une espace insécable si la police ne la gère pas.
-- **Devise et pays** : XOF (UEMOA) ou XAF (CEMAC) selon le pays, toujours affichée « FCFA ». TVA par défaut à 18 %, modifiable dans les paramètres (par exemple 19,25 % au Cameroun).
+- **Fondateur & Gérant :** **Philippe NOUGOUE** (PNO Solutions Cameroun S.A.R.L - Douala & Yaoundé).
+- **Contacts officiels :** Tel MTN (MoMo) : `+237 677481161` | Tel Orange (Orange Money) : `+237 691114908`.
+- **Affichage monétaire :** `1 250 000 FCFA` (`Intl.NumberFormat('fr-FR')`). Dans le PDF, l'espace fine U+202F est remplacée par une espace insécable si la police ne la gère pas.
+- **Devise et pays :** Franc CFA d'Afrique centrale XAF (CEMAC), toujours affiché « FCFA ». TVA légale camerounaise par défaut à **19,25 %** (calcul déterministe `big.js` half-up).
 - **Montant en lettres** sur le PDF : « Arrêtée la présente facture à la somme de un million deux cent cinquante mille francs CFA ». Implémenté dans `number-to-words-fr.ts` et testé sur tous les cas piégeux (et un, quatre-vingts, cents, mille, millions, milliards).
-- **Mentions légales OHADA** : RCCM et n° d'identification fiscale (vendeur et client B2B).
-- **Moyens de paiement** : Espèces, Virement, Chèque, Orange Money, Wave, MTN MoMo, Moov Money, Carte, Autre. Un champ « Référence » sert pour l'ID de transaction mobile money.
-- **WhatsApp** : lien `wa.me` avec un message prérempli (client, numéro, montant, lien public).
-- **Téléphone** au format international (+221, +225…), avec l'indicatif du pays de l'entreprise par défaut.
-- **Fuseau horaire** : les échéances sont des colonnes `date`, sans fuseau ; la zone cible est UTC+0 ou UTC+1.
+- **Mentions légales OHADA :** RCCM (`RC/DLA/2024/B/1234`) et Numéro d'Identifiant Unique (`NIU M052112345678A`).
+- **Moyens de paiement locaux :** MTN Mobile Money (`*126#` - `+237 677481161`), Orange Money (`*150#` - `+237 691114908`), Virement bancaire (Afriland First Bank, BICEC, UBA, SGC).
+- **WhatsApp :** lien direct `wa.me/237677481161` avec un message prérempli (client, numéro, montant, lien public).
+- **Téléphone :** format camerounais international (+237).
+- **Fuseau horaire :** Afrique Centrale (WAT, GMT+1, Douala/Yaoundé).
 
 ---
 

@@ -115,7 +115,7 @@ export default function InvoiceDetailClient({
                   <strong className="text-slate-700 dark:text-slate-300">
                     {invoice.clientName}
                   </strong>{" "}
-                  • Émise le {formatDate(invoice.issueDate)} par Philippe Noukoué
+                  • Émise le {formatDate(invoice.issueDate)} par Philippe NOUGOUE
                 </p>
               </div>
             </div>
@@ -266,7 +266,7 @@ export default function InvoiceDetailClient({
                         Facture émise
                       </p>
                       <p className="text-[11px] text-slate-400">
-                        {formatDate(invoice.issueDate)} par Philippe Noukoué
+                        {formatDate(invoice.issueDate)} par Philippe NOUGOUE
                       </p>
                     </div>
                   </div>

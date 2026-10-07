@@ -37,7 +37,7 @@ export default function CreateInvoicePage() {
   const [showPreview, setShowPreview] = useState(true);
   const [invoiceType, setInvoiceType] = useState<"standard" | "split" | "recurring">("standard");
 
-  // Form states - Philippe Noukoué (Cameroun)
+  // Form states - Philippe NOUGOUE (Cameroun)
   const [sellerName, setSellerName] = useState("PNO Solutions Cameroun S.A.R.L");
   const [clientName, setClientName] = useState("MTN Cameroon B2B");
   const [clientEmail, setClientEmail] = useState("business@mtn.cm");

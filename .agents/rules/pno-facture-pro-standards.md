@@ -8,7 +8,10 @@ Ce document fixe les conventions strictes et obligatoires à appliquer sur toute
 
 - **Pays d'ancrage :** Cameroun (zone CEMAC).
 - **Raison sociale :** PNO Solutions Cameroun S.A.R.L.
-- **Gérant & Fondateur :** Philippe Noukoué (initiales `PN`).
+- **Gérant & Fondateur :** Philippe NOUGOUE (initiales `PN`).
+- **Contacts officiels :**
+  - **Tel MTN (Mobile Money) :** `+237 677481161`
+  - **Tel Orange (Orange Money) :** `+237 691114908`
 - **Devise monétaire :** Franc CFA (XAF), toujours affiché avec le sigle `FCFA` et séparateur d'espace insécable (ex: `250 000 FCFA`, `1 450 000 FCFA`).
 - **Taux de TVA légal par défaut :** `19,25%` (taux en vigueur en République du Cameroun). Taux réduit : `10%`, Exonéré : `0%`.
 - **Mentions légales & Registres :**
@@ -16,9 +19,9 @@ Ce document fixe les conventions strictes et obligatoires à appliquer sur toute
   - **RCCM :** Registre du Commerce et du Crédit Mobilier (ex: `RC/DLA/2024/B/1234`).
   - **Villes principales :** Douala (siège économique, Akwa, Bonanjo), Yaoundé (siège institutionnel, Bastos).
 - **Moyens de paiement locaux prioritaires :**
-  - **MTN Mobile Money Cameroun** (`*126#`)
-  - **Orange Money Cameroun** (`*150#`)
-  - **Virement bancaire / RIB** (banques locales : Afriland First Bank, UBA, BICEC, Société Générale Cameroun).
+  - **MTN Mobile Money Cameroun** (`*126#` - `+237 677481161`)
+  - **Orange Money Cameroun** (`*150#` - `+237 691114908`)
+  - **Virement bancaire / RIB** (Afriland First Bank, UBA, BICEC, Société Générale Cameroun).
 
 ---
 
