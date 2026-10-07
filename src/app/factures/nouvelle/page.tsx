@@ -20,12 +20,6 @@ import {
   Plus,
   Send,
   Save,
-  Mail,
-  Download,
-  Eye,
-  EyeOff,
-  ArrowLeft,
-  Check,
   Sparkles,
 } from "lucide-react";
 
@@ -43,12 +37,12 @@ export default function CreateInvoicePage() {
   const [showPreview, setShowPreview] = useState(true);
   const [invoiceType, setInvoiceType] = useState<"standard" | "split" | "recurring">("standard");
 
-  // Form states
-  const [sellerName, setSellerName] = useState("PNO Solutions S.A.R.L");
-  const [clientName, setClientName] = useState("Sonatel Orange B2B");
-  const [clientEmail, setClientEmail] = useState("pro@orange-sonatel.sn");
-  const [clientPhone, setClientPhone] = useState("+221 33 839 20 00");
-  const [clientCity, setClientCity] = useState("Dakar, Sénégal");
+  // Form states - Philippe Noukoué (Cameroun)
+  const [sellerName, setSellerName] = useState("PNO Solutions Cameroun S.A.R.L");
+  const [clientName, setClientName] = useState("MTN Cameroon B2B");
+  const [clientEmail, setClientEmail] = useState("business@mtn.cm");
+  const [clientPhone, setClientPhone] = useState("+237 6 77 12 34 56");
+  const [clientCity, setClientCity] = useState("Douala, Cameroun");
   const [issueDate, setIssueDate] = useState("2026-10-07");
   const [dueDate, setDueDate] = useState("2026-11-07");
   const [invoiceNumber, setInvoiceNumber] = useState("FAC-2026-0049");
@@ -60,17 +54,17 @@ export default function CreateInvoicePage() {
   const [items, setItems] = useState<FormLineItem[]>([
     {
       id: "1",
-      description: "Conseil & Stratégie Digitale SaaS",
+      description: "Conseil & Stratégie Digitale SaaS (Douala)",
       quantity: 1,
       unitPrice: 1_500_000,
-      taxRate: 18,
+      taxRate: 19.25,
     },
     {
       id: "2",
       description: "Développement Application Web & API Mobile",
       quantity: 2,
       unitPrice: 850_000,
-      taxRate: 18,
+      taxRate: 19.25,
     },
   ]);
 
@@ -92,7 +86,7 @@ export default function CreateInvoicePage() {
         description: "",
         quantity: 1,
         unitPrice: 250_000,
-        taxRate: 18,
+        taxRate: 19.25,
       },
     ]);
   };
@@ -141,7 +135,10 @@ export default function CreateInvoicePage() {
           <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
-                <Link href="/factures" className="hover:text-blue-600 transition-colors">
+                <Link
+                  href="/factures"
+                  className="hover:text-blue-600 transition-colors"
+                >
                   Factures
                 </Link>
                 <span>&gt;</span>
@@ -151,7 +148,7 @@ export default function CreateInvoicePage() {
                 Créer une facture
               </h1>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Édition en direct avec calculs automatiques en FCFA et aperçu instantané.
+                PNO Solutions Cameroun • Émission en FCFA (XAF) avec TVA légale de 19,25%
               </p>
             </div>
 
@@ -163,7 +160,7 @@ export default function CreateInvoicePage() {
               <button
                 type="button"
                 onClick={() => setShowPreview(!showPreview)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-hidden ${
                   showPreview ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
                 }`}
               >
@@ -186,7 +183,7 @@ export default function CreateInvoicePage() {
               <button
                 key={type.id}
                 onClick={() => setInvoiceType(type.id as any)}
-                className={`rounded-xl px-5 py-2 text-xs font-bold transition-all ${
+                className={`rounded-xl px-5 py-2 text-xs font-bold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 ${
                   invoiceType === type.id
                     ? "bg-white text-slate-950 shadow-sm dark:bg-slate-700 dark:text-white"
                     : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
@@ -255,7 +252,7 @@ export default function CreateInvoicePage() {
                         type="date"
                         value={issueDate}
                         onChange={(e) => setIssueDate(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-3 text-xs font-semibold text-slate-900 transition-colors focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                        className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-3 text-xs font-semibold text-slate-900 transition-colors focus:border-blue-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                       />
                     </div>
                   </div>
@@ -271,7 +268,7 @@ export default function CreateInvoicePage() {
                         type="date"
                         value={dueDate}
                         onChange={(e) => setDueDate(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-3 text-xs font-semibold text-slate-900 transition-colors focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                        className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-3 text-xs font-semibold text-slate-900 transition-colors focus:border-blue-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                       />
                     </div>
                   </div>
@@ -301,7 +298,7 @@ export default function CreateInvoicePage() {
                     Lignes de prestations / Services
                   </h3>
                   <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                    Devise : FCFA (XOF)
+                    Devise : FCFA (XAF Cameroun)
                   </span>
                 </div>
 
@@ -320,7 +317,7 @@ export default function CreateInvoicePage() {
                           <button
                             type="button"
                             onClick={() => handleRemoveItem(item.id)}
-                            className="rounded-lg p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition-colors"
+                            className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition-all duration-200 hover:scale-110 active:scale-95"
                             title="Supprimer la ligne"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -373,7 +370,7 @@ export default function CreateInvoicePage() {
                           </div>
                         </div>
 
-                        {/* Tax Rate % */}
+                        {/* Tax Rate % - Cameroon standard 19.25% */}
                         <div className="relative">
                           <label className="absolute -top-2 left-3 bg-slate-50 dark:bg-slate-800 px-1.5 text-[10px] font-bold text-slate-500 z-10 rounded">
                             TVA (%)
@@ -391,7 +388,7 @@ export default function CreateInvoicePage() {
                               }
                               className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-xs font-semibold text-slate-900 focus:border-blue-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                             >
-                              <option value="18">18% (Taux normal)</option>
+                              <option value="19.25">19,25% (TVA Cameroun)</option>
                               <option value="0">0% (Exonéré)</option>
                               <option value="10">10% (Taux réduit)</option>
                             </select>
@@ -426,13 +423,13 @@ export default function CreateInvoicePage() {
                   ))}
                 </div>
 
-                {/* Add Item Button */}
+                {/* Add Item Button with hover interaction */}
                 <button
                   type="button"
                   onClick={handleAddItem}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-blue-300 bg-blue-50/50 py-3 text-xs font-bold text-blue-700 hover:bg-blue-50 hover:border-blue-400 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-300 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-blue-300 bg-blue-50/50 py-3 text-xs font-bold text-blue-700 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-50 hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/10 active:translate-y-0 active:scale-98 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-300"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4 transition-transform group-hover:rotate-90" />
                   <span>+ Ajouter une ligne de service</span>
                 </button>
 
@@ -480,7 +477,7 @@ export default function CreateInvoicePage() {
             {/* Right Live Preview Pane matching the screenshot */}
             {showPreview && (
               <div className="lg:col-span-6 xl:col-span-6 space-y-4 sticky top-24">
-                {/* Action Toolbar on top of preview */}
+                {/* Action Toolbar on top of preview with rich hover buttons */}
                 <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-xs dark:border-slate-800 dark:bg-slate-900">
                   <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 ml-2">
                     <Sparkles className="h-4 w-4 text-blue-600" />
@@ -488,21 +485,21 @@ export default function CreateInvoicePage() {
                   </span>
 
                   <div className="flex items-center gap-2">
-                    {/* Save Draft */}
+                    {/* Save Draft with hover */}
                     <button
                       type="button"
                       onClick={handleSaveDraft}
-                      className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:shadow-md hover:shadow-slate-500/10 active:translate-y-0 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                     >
                       <Save className="h-3.5 w-3.5 text-slate-500" />
                       <span>Enregistrer brouillon</span>
                     </button>
 
-                    {/* Send Invoice */}
+                    {/* Send Invoice with hover glow */}
                     <button
                       type="button"
                       onClick={handleSendInvoice}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-600/25 hover:bg-blue-700 transition-all active:scale-98"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-600/25 transition-all duration-200 hover:-translate-y-0.5 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl hover:shadow-blue-600/35 active:translate-y-0 active:scale-95"
                     >
                       <Send className="h-3.5 w-3.5" />
                       <span>Envoyer la facture</span>

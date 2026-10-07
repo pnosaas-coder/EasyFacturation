@@ -9,7 +9,6 @@ import {
   MessageSquare,
   Mail,
   Building2,
-  ArrowUpRight,
   Sparkles,
 } from "lucide-react";
 
@@ -19,9 +18,9 @@ interface QuickRelanceWidgetProps {
 
 export function QuickRelanceWidget({ overdueInvoices }: QuickRelanceWidgetProps) {
   const topClients = [
-    { name: "Groupe SIFCA", city: "Abidjan, CI", total: 10_605_000, percentage: 85 },
-    { name: "Sonatel Orange B2B", city: "Dakar, SN", total: 6_984_000, percentage: 65 },
-    { name: "Wave Digital Finance", city: "Abidjan, CI", total: 4_360_000, percentage: 45 },
+    { name: "Boissons du Cameroun (SABC)", city: "Douala, CM", total: 10_605_000, percentage: 88 },
+    { name: "MTN Cameroon B2B", city: "Douala, CM", total: 6_984_000, percentage: 68 },
+    { name: "Orange Cameroun S.A.", city: "Douala / Yaoundé", total: 4_360_000, percentage: 46 },
   ];
 
   return (
@@ -51,7 +50,7 @@ export function QuickRelanceWidget({ overdueInvoices }: QuickRelanceWidgetProps)
           {overdueInvoices.slice(0, 2).map((inv) => (
             <div
               key={inv.id}
-              className="rounded-xl border border-rose-100 bg-white/80 p-3 shadow-2xs dark:border-rose-900/30 dark:bg-slate-800/80"
+              className="rounded-xl border border-rose-100 bg-white/80 p-3 shadow-2xs dark:border-rose-900/30 dark:bg-slate-800/80 transition-all duration-200 hover:shadow-sm"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -74,13 +73,13 @@ export function QuickRelanceWidget({ overdueInvoices }: QuickRelanceWidgetProps)
               <div className="mt-2.5 flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
                 <a
                   href={`https://wa.me/?text=${encodeURIComponent(
-                    `Bonjour, relance amicale pour la facture ${inv.number} de ${formatFCFA(
+                    `Bonjour, relance amicale de PNO Solutions pour la facture ${inv.number} de ${formatFCFA(
                       inv.balanceDue
                     )} échue le ${formatDate(inv.dueDate)}.`
                   )}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-emerald-700 transition-colors shadow-2xs"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-md hover:shadow-emerald-600/20 active:translate-y-0 active:scale-95 shadow-2xs"
                 >
                   <MessageSquare className="h-3 w-3" />
                   <span>WhatsApp</span>
@@ -88,7 +87,7 @@ export function QuickRelanceWidget({ overdueInvoices }: QuickRelanceWidgetProps)
 
                 <button
                   onClick={() => alert(`Email de relance préparé pour ${inv.clientName}`)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-700 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xs active:translate-y-0 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 >
                   <Mail className="h-3 w-3 text-slate-500" />
                   <span>Email</span>
@@ -99,24 +98,24 @@ export function QuickRelanceWidget({ overdueInvoices }: QuickRelanceWidgetProps)
         </div>
       </div>
 
-      {/* Top Clients Ranking */}
+      {/* Top Clients Ranking - Cameroun */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <h4 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Building2 className="h-4 w-4 text-blue-600" />
-            Top Clients (CA Facturé)
+            Top Clients Cameroun (CA Facturé)
           </h4>
-          <span className="text-[11px] font-semibold text-blue-600 hover:underline cursor-pointer dark:text-blue-400">
+          <span className="text-[11px] font-semibold text-blue-600 hover:underline cursor-pointer dark:text-blue-400 transition-colors">
             Voir tous
           </span>
         </div>
 
         <div className="mt-4 space-y-4">
           {topClients.map((cli) => (
-            <div key={cli.name} className="space-y-1.5">
+            <div key={cli.name} className="space-y-1.5 group/client cursor-pointer">
               <div className="flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                  <span className="font-bold text-slate-800 dark:text-slate-200 group-hover/client:text-blue-600 transition-colors">
                     {cli.name}
                   </span>
                   <span className="text-[10px] text-slate-400 ml-1.5">{cli.city}</span>
@@ -128,7 +127,7 @@ export function QuickRelanceWidget({ overdueInvoices }: QuickRelanceWidgetProps)
               <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                 <div
                   style={{ width: `${cli.percentage}%` }}
-                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-700"
+                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300 group-hover/client:from-blue-600 group-hover/client:to-indigo-600"
                 />
               </div>
             </div>
@@ -141,7 +140,7 @@ export function QuickRelanceWidget({ overdueInvoices }: QuickRelanceWidgetProps)
             <Sparkles className="h-4 w-4 text-blue-600 shrink-0 mt-0.5 dark:text-blue-400" />
             <div className="text-[11px] text-slate-600 dark:text-slate-300">
               <strong className="text-slate-900 dark:text-white">Conseil trésorerie :</strong>{" "}
-              Activez le paiement mobile Wave & Orange Money sur vos devis pour réduire le délai moyen d'encaissement de 40%.
+              Activez le paiement mobile MTN MoMo (*126#) et Orange Money (*150#) sur vos devis au Cameroun pour accélérer les encaissements de 45%.
             </div>
           </div>
         </div>

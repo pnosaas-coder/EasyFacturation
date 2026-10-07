@@ -16,10 +16,7 @@ import {
 import {
   Plus,
   FileCheck2,
-  Download,
   Sparkles,
-  ArrowRight,
-  TrendingUp,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -44,18 +41,18 @@ export default function DashboardPage() {
 
         {/* Dashboard Body */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-7 max-w-7xl mx-auto w-full">
-          {/* Welcome & Action Banner */}
+          {/* Welcome & Action Banner - Philippe Noukoué (Cameroun) */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-2xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-6 text-white shadow-lg shadow-blue-500/15">
             <div className="space-y-1.5">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md">
                 <Sparkles className="h-3.5 w-3.5 text-blue-200" />
-                <span>PNO Facture Pro • Zone FCFA</span>
+                <span>PNO Facture Pro • Cameroun (Douala & Yaoundé)</span>
               </div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
-                Bonjour, Ousmane 👋
+                Bonjour, Philippe 👋
               </h1>
               <p className="text-xs sm:text-sm text-blue-100 max-w-xl">
-                Voici le bilan de votre facturation pour ce mois d'octobre 2026. Vous avez{" "}
+                Voici le bilan de votre facturation PNO Solutions pour ce mois d'octobre 2026. Vous avez{" "}
                 <span className="font-bold underline decoration-blue-300">
                   3 factures à relancer
                 </span>{" "}
@@ -63,11 +60,11 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Quick action buttons in banner */}
+            {/* Quick action buttons in banner with hover interactions */}
             <div className="flex flex-wrap items-center gap-2.5 pt-2 md:pt-0">
               <Link
                 href="/factures/nouvelle"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-blue-700 shadow-md transition-all hover:bg-blue-50 active:scale-98"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-4.5 py-2.5 text-xs font-bold text-blue-700 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-50 hover:shadow-xl hover:shadow-black/10 active:translate-y-0 active:scale-95"
               >
                 <Plus className="h-4 w-4" />
                 <span>Nouvelle facture</span>
@@ -75,7 +72,7 @@ export default function DashboardPage() {
 
               <Link
                 href="/devis/nouveau"
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-800/60 border border-white/20 px-4 py-2.5 text-xs font-semibold text-white backdrop-blur-md transition-all hover:bg-blue-800 active:scale-98"
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-800/60 border border-white/20 px-4 py-2.5 text-xs font-semibold text-white backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-800 hover:border-white/40 active:translate-y-0 active:scale-95"
               >
                 <FileCheck2 className="h-4 w-4" />
                 <span>Créer un devis</span>

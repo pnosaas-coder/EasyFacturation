@@ -2,7 +2,7 @@ import React from "react";
 import { formatFCFA } from "../../lib/format/money";
 import { formatDate } from "../../lib/format/dates";
 import { numberToWordsFr } from "../../lib/calc/number-to-words-fr";
-import { Sparkles, Building2, Smartphone, Landmark } from "lucide-react";
+import { Sparkles, Smartphone, Landmark } from "lucide-react";
 
 export interface InvoicePreviewProps {
   invoiceNumber: string;
@@ -33,7 +33,7 @@ export interface InvoicePreviewProps {
   notes?: string;
   paymentInstructions?: {
     bankRib?: string;
-    wavePhone?: string;
+    mtnMoMoPhone?: string;
     orangeMoneyPhone?: string;
   };
   status?: string;
@@ -41,12 +41,12 @@ export interface InvoicePreviewProps {
 
 export function InvoicePreview({
   invoiceNumber,
-  sellerName = "PNO Solutions S.A.R.L",
-  sellerEmail = "contact@pno-solutions.sn",
-  sellerPhone = "+221 77 123 45 67",
-  sellerAddress = "Immeuble R+4, Rue 12, Dakar, Sénégal",
-  sellerTaxId = "NINEA 009876543 2V1",
-  sellerRccm = "SN.DKR.2024.B.12345",
+  sellerName = "PNO Solutions Cameroun S.A.R.L",
+  sellerEmail = "contact@pno-cameroun.cm",
+  sellerPhone = "+237 6 77 12 34 56",
+  sellerAddress = "Boulevard de la Liberté, Akwa, Douala, Cameroun",
+  sellerTaxId = "NIU M052112345678A",
+  sellerRccm = "RC/DLA/2024/B/1234",
   clientName,
   clientEmail,
   clientPhone,
@@ -59,16 +59,14 @@ export function InvoicePreview({
   discountAmount = 0,
   taxTotal,
   total,
-  notes,
   paymentInstructions = {
-    wavePhone: "+221 77 123 45 67",
-    orangeMoneyPhone: "+221 78 987 65 43",
-    bankRib: "SN08 SN01 2013 4567 8901 2345 67",
+    mtnMoMoPhone: "+237 6 77 12 34 56 (MTN MoMo)",
+    orangeMoneyPhone: "+237 6 99 87 65 43 (Orange Money)",
+    bankRib: "CM21 10005 00012 01234567890 45 (Afriland First Bank)",
   },
-  status,
 }: InvoicePreviewProps) {
   return (
-    <div className="relative mx-auto w-full max-w-[800px] rounded-2xl border border-slate-200 bg-white p-8 text-slate-800 shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 print:shadow-none print:border-none">
+    <div className="relative mx-auto w-full max-w-[800px] rounded-2xl border border-slate-200 bg-white p-8 text-slate-800 shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 print:shadow-none print:border-none transition-all duration-300 hover:shadow-2xl hover:shadow-slate-500/10">
       {/* Top Header */}
       <div className="flex items-start justify-between border-b border-slate-200 pb-6 dark:border-slate-800">
         <div>
@@ -81,14 +79,14 @@ export function InvoicePreview({
         </div>
 
         {/* Company Emblem Logo */}
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 text-white shadow-md shadow-blue-500/20">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 text-white shadow-md shadow-blue-500/20 transition-transform duration-300 hover:scale-105">
           <Sparkles className="h-6 w-6 text-white" />
         </div>
       </div>
 
       {/* Two-column Seller / Buyer Info */}
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
-        {/* Seller */}
+        {/* Seller - Cameroun */}
         <div className="space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
             Émetteur (Vendeur) :
@@ -114,14 +112,14 @@ export function InvoicePreview({
             {clientName || "Nom du client"}
           </p>
           <p className="text-slate-600 dark:text-slate-400">
-            {clientAddress || "Adresse du client"}
+            {clientAddress || "Douala / Yaoundé, Cameroun"}
           </p>
           <p className="text-slate-600 dark:text-slate-400">
-            {clientEmail || "email@client.com"} • {clientPhone || "+221..."}
+            {clientEmail || "contact@client.cm"} • {clientPhone || "+237..."}
           </p>
           {clientTaxId && (
             <p className="text-[11px] text-slate-500 font-medium">
-              ID Fiscal: {clientTaxId}
+              NIU Client : {clientTaxId}
             </p>
           )}
         </div>
@@ -143,7 +141,7 @@ export function InvoicePreview({
         </div>
         <div>
           <span className="text-slate-400 font-medium">Devise :</span>{" "}
-          <strong className="text-slate-900 dark:text-white">FCFA (XOF)</strong>
+          <strong className="text-slate-900 dark:text-white">FCFA (XAF - Cameroun)</strong>
         </div>
       </div>
 
@@ -154,21 +152,21 @@ export function InvoicePreview({
             <tr>
               <th className="py-2.5 px-2">Désignation</th>
               <th className="py-2.5 px-2 text-center w-16">Qté</th>
-              <th className="py-2.5 px-2 text-center w-16">TVA</th>
+              <th className="py-2.5 px-2 text-center w-20">TVA</th>
               <th className="py-2.5 px-2 text-right w-28">Prix unitaire</th>
               <th className="py-2.5 px-2 text-right w-32">Total HT</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
             {items.map((it, idx) => (
-              <tr key={idx}>
+              <tr key={idx} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
                 <td className="py-3 px-2 font-medium text-slate-900 dark:text-slate-100">
                   {it.description || "Prestation de service"}
                 </td>
                 <td className="py-3 px-2 text-center text-slate-600 dark:text-slate-300">
                   {it.quantity}
                 </td>
-                <td className="py-3 px-2 text-center text-slate-600 dark:text-slate-300">
+                <td className="py-3 px-2 text-center text-slate-600 dark:text-slate-300 font-semibold">
                   {it.taxRate}%
                 </td>
                 <td className="py-3 px-2 text-right text-slate-600 dark:text-slate-300">
@@ -201,7 +199,7 @@ export function InvoicePreview({
           )}
 
           <div className="flex justify-between text-slate-600 dark:text-slate-300">
-            <span>TVA collectée (18%) :</span>
+            <span>TVA Cameroun (19,25%) :</span>
             <span className="font-semibold text-slate-900 dark:text-white">
               {formatFCFA(taxTotal)}
             </span>
@@ -221,32 +219,36 @@ export function InvoicePreview({
         {numberToWordsFr(total)}
       </div>
 
-      {/* Notes & Instructions de paiement Mobile Money & Banque */}
+      {/* Notes & Instructions de paiement Mobile Money Cameroun & Banque */}
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200 pt-4 dark:border-slate-800 text-[11px]">
-        {/* Instructions de paiement */}
+        {/* Instructions de paiement Cameroun */}
         <div className="space-y-1.5">
           <span className="font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px]">
-            Moyens de paiement acceptés :
+            Moyens de paiement acceptés (Cameroun) :
           </span>
           <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
-            <Smartphone className="h-3.5 w-3.5 text-blue-500" />
-            <span>Wave & Orange Money : {paymentInstructions.wavePhone}</span>
+            <Smartphone className="h-3.5 w-3.5 text-amber-500" />
+            <span>{paymentInstructions.mtnMoMoPhone}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <Smartphone className="h-3.5 w-3.5 text-orange-500" />
+            <span>{paymentInstructions.orangeMoneyPhone}</span>
           </div>
           <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
             <Landmark className="h-3.5 w-3.5 text-emerald-600" />
-            <span>Virement Bancaire (RIB) : {paymentInstructions.bankRib}</span>
+            <span>{paymentInstructions.bankRib}</span>
           </div>
         </div>
 
-        {/* Signature & Cachet */}
+        {/* Signature & Cachet : Philippe Noukoué */}
         <div className="flex flex-col items-end justify-between">
           <span className="font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px]">
-            Pour PNO Solutions (Signature) :
+            Pour PNO Solutions Cameroun :
           </span>
-          <div className="mt-3 font-serif italic text-base text-slate-800 dark:text-slate-200">
-            Ousmane Diallo
+          <div className="mt-3 font-serif italic text-base font-bold text-slate-900 dark:text-slate-100">
+            Philippe Noukoué
           </div>
-          <span className="text-[9px] text-slate-400">Gérant & Fondateur</span>
+          <span className="text-[10px] text-slate-400 font-medium">Gérant Fondateur</span>
         </div>
       </div>
     </div>

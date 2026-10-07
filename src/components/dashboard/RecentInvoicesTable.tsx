@@ -2,21 +2,16 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Invoice, InvoiceStatus } from "../../lib/domain/types";
+import { Invoice } from "../../lib/domain/types";
 import { formatFCFA } from "../../lib/format/money";
 import { formatDate } from "../../lib/format/dates";
 import { StatusBadge } from "../shared/StatusBadge";
 import {
   FileText,
   Search,
-  Filter,
-  Eye,
   Download,
-  Share2,
-  MoreVertical,
   ArrowUpRight,
   MessageSquare,
-  Check,
 } from "lucide-react";
 
 interface RecentInvoicesTableProps {
@@ -26,7 +21,6 @@ interface RecentInvoicesTableProps {
 export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
   const [activeTab, setActiveTab] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
   const filteredInvoices = invoices.filter((inv) => {
     // Filter by tab
@@ -48,9 +42,9 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
 
   const getWhatsAppLink = (inv: Invoice) => {
     const text = encodeURIComponent(
-      `Bonjour ${inv.clientName},\nVoici votre facture ${inv.number} d'un montant de ${formatFCFA(
+      `Bonjour ${inv.clientName},\nVoici votre facture ${inv.number} émise par PNO Solutions Cameroun d'un montant de ${formatFCFA(
         inv.total
-      )}.\nÉchéance : ${formatDate(inv.dueDate)}.\nMerci de procéder au règlement.`
+      )}.\nÉchéance : ${formatDate(inv.dueDate)}.\nMerci de procéder au règlement (MTN MoMo, Orange Money ou Virement).`
     );
     return `https://wa.me/?text=${text}`;
   };
@@ -65,13 +59,13 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
             Dernières factures émises
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Suivi des émissions, encaissements et relances en temps réel
+            Suivi des émissions et encaissements au Cameroun (Douala & Yaoundé)
           </p>
         </div>
 
         {/* Filter Tabs & Search */}
         <div className="flex flex-wrap items-center gap-2.5">
-          {/* Status Tabs */}
+          {/* Status Tabs with hover effects */}
           <div className="inline-flex rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
             {[
               { id: "all", label: "Toutes" },
@@ -83,7 +77,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 ${
                   activeTab === tab.id
                     ? "bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white"
                     : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
@@ -94,15 +88,15 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
             ))}
           </div>
 
-          {/* Search Input */}
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
+          {/* Search Input with Hover effect */}
+          <div className="group/table-search relative transition-all duration-200">
+            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400 transition-colors group-hover/table-search:text-blue-600" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="N° ou client..."
-              className="h-8 rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-3 text-xs text-slate-800 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="h-8 rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-3 text-xs text-slate-800 placeholder-slate-400 transition-all duration-200 group-hover/table-search:border-blue-400 group-hover/table-search:bg-white group-hover/table-search:shadow-xs focus:border-blue-600 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             />
           </div>
         </div>
@@ -116,7 +110,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
               <th className="py-3 px-4 w-10">
                 <input
                   type="checkbox"
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                 />
               </th>
               <th className="py-3 px-4">N° Facture</th>
@@ -144,7 +138,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
                   <td className="py-3.5 px-4">
                     <input
                       type="checkbox"
-                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     />
                   </td>
 
@@ -152,7 +146,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
                   <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-slate-100">
                     <Link
                       href={`/factures/${inv.id}`}
-                      className="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1 group-hover:underline"
+                      className="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1 group-hover:underline transition-colors"
                     >
                       {inv.number}
                     </Link>
@@ -165,7 +159,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
                         {inv.clientName}
                       </span>
                       <span className="text-[11px] text-slate-400">
-                        {inv.clientCity || "Sénégal"}
+                        {inv.clientCity || "Cameroun"}
                       </span>
                     </div>
                   </td>
@@ -207,7 +201,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
                     <StatusBadge status={inv.status} />
                   </td>
 
-                  {/* Actions */}
+                  {/* Actions with rich hover states */}
                   <td className="py-3.5 px-4 text-right">
                     <div className="flex items-center justify-end gap-1.5 opacity-90 group-hover:opacity-100">
                       {/* WhatsApp share */}
@@ -216,7 +210,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
                         target="_blank"
                         rel="noreferrer"
                         title="Partager sur WhatsApp"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-400 transition-colors"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-400 transition-all duration-200 hover:scale-115 active:scale-95"
                       >
                         <MessageSquare className="h-4 w-4" />
                       </a>
@@ -225,7 +219,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
                       <button
                         title="Télécharger le PDF"
                         onClick={() => alert(`Téléchargement de la facture ${inv.number} au format PDF.`)}
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/50 dark:hover:text-blue-400 transition-colors"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/50 dark:hover:text-blue-400 transition-all duration-200 hover:scale-115 active:scale-95"
                       >
                         <Download className="h-4 w-4" />
                       </button>
@@ -234,7 +228,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
                       <Link
                         href={`/factures/${inv.id}`}
                         title="Consulter"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-colors"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-all duration-200 hover:scale-115 active:scale-95"
                       >
                         <ArrowUpRight className="h-4 w-4" />
                       </Link>
@@ -252,9 +246,10 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
         <span>Affichage de {filteredInvoices.length} sur {invoices.length} factures</span>
         <Link
           href="/factures"
-          className="font-bold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400"
+          className="font-bold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 transition-all hover:translate-x-1 flex items-center gap-1"
         >
-          Voir toutes les factures →
+          <span>Voir toutes les factures</span>
+          <span>→</span>
         </Link>
       </div>
     </div>

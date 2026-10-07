@@ -33,12 +33,12 @@ export default function InvoiceDetailClient({
     mockRecentInvoices.find((inv) => inv.id === invoiceId) ||
     mockRecentInvoices[0];
 
-  // Payment recording form state
+  // Payment recording form state (MTN MoMo & Orange Money Cameroun)
   const [paymentAmount, setPaymentAmount] = useState<number>(
     invoice.balanceDue || invoice.total
   );
-  const [paymentMethod, setPaymentMethod] = useState("wave");
-  const [paymentRef, setPaymentRef] = useState("TXN-WAVE-892193");
+  const [paymentMethod, setPaymentMethod] = useState("mtn_momo");
+  const [paymentRef, setPaymentRef] = useState("MTN-CM-9281734");
   const [paymentDate, setPaymentDate] = useState("2026-10-07");
 
   const [recordedPayments, setRecordedPayments] = useState([
@@ -48,8 +48,8 @@ export default function InvoiceDetailClient({
             id: "pay_1",
             amount: invoice.amountPaid,
             date: "2026-09-15",
-            method: "Wave",
-            ref: "WV-SN-29384729",
+            method: "MTN Mobile Money",
+            ref: "MTN-CM-9281734",
           },
         ]
       : []),
@@ -65,7 +65,7 @@ export default function InvoiceDetailClient({
         id: String(Date.now()),
         amount: paymentAmount,
         date: paymentDate,
-        method: paymentMethod.toUpperCase(),
+        method: paymentMethod === "mtn_momo" ? "MTN MoMo" : paymentMethod === "orange_money" ? "Orange Money" : paymentMethod.toUpperCase(),
         ref: paymentRef,
       },
     ]);
@@ -78,7 +78,7 @@ export default function InvoiceDetailClient({
     const text = encodeURIComponent(
       `Bonjour ${invoice.clientName},\nVoici votre facture ${invoice.number} d'un montant de ${formatFCFA(
         invoice.total
-      )}.\nÉchéance : ${formatDate(invoice.dueDate)}.\nMerci de procéder au règlement.`
+      )}.\nÉchéance : ${formatDate(invoice.dueDate)}.\nMerci de procéder au règlement via MTN MoMo, Orange Money ou Virement bancaire.`
     );
     return `https://wa.me/?text=${text}`;
   };
@@ -99,7 +99,7 @@ export default function InvoiceDetailClient({
             <div className="flex items-center gap-3">
               <Link
                 href="/factures"
-                className="rounded-xl border border-slate-200 bg-white p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
+                className="rounded-xl border border-slate-200 bg-white p-2 text-slate-500 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-400 hover:text-blue-600 hover:shadow-md hover:shadow-blue-500/10 active:translate-y-0 active:scale-95 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
@@ -115,16 +115,16 @@ export default function InvoiceDetailClient({
                   <strong className="text-slate-700 dark:text-slate-300">
                     {invoice.clientName}
                   </strong>{" "}
-                  • Émise le {formatDate(invoice.issueDate)}
+                  • Émise le {formatDate(invoice.issueDate)} par Philippe Noukoué
                 </p>
               </div>
             </div>
 
-            {/* Actions Bar */}
+            {/* Actions Bar with rich hover states */}
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setPaymentModalOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-md hover:bg-emerald-700 transition-all active:scale-98"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/30 active:translate-y-0 active:scale-95"
               >
                 <Coins className="h-4 w-4" />
                 <span>Enregistrer un paiement</span>
@@ -134,7 +134,7 @@ export default function InvoiceDetailClient({
                 href={getWhatsAppLink()}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-800 transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-100 hover:shadow-md hover:shadow-emerald-600/15 active:translate-y-0 active:scale-95 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300"
               >
                 <MessageSquare className="h-4 w-4" />
                 <span>WhatsApp</span>
@@ -144,7 +144,7 @@ export default function InvoiceDetailClient({
                 onClick={() =>
                   alert(`Téléchargement de la facture ${invoice.number} en PDF.`)
                 }
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:shadow-md active:translate-y-0 active:scale-95 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200"
               >
                 <Download className="h-4 w-4 text-slate-500" />
                 <span>PDF</span>
@@ -231,7 +231,7 @@ export default function InvoiceDetailClient({
                     recordedPayments.map((p) => (
                       <div
                         key={p.id}
-                        className="rounded-xl bg-slate-50 p-2.5 dark:bg-slate-800/60 text-xs flex items-center justify-between"
+                        className="rounded-xl bg-slate-50 p-2.5 dark:bg-slate-800/60 text-xs flex items-center justify-between transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
                       >
                         <div>
                           <div className="font-bold text-slate-800 dark:text-slate-200">
@@ -266,7 +266,7 @@ export default function InvoiceDetailClient({
                         Facture émise
                       </p>
                       <p className="text-[11px] text-slate-400">
-                        {formatDate(invoice.issueDate)} par Ousmane Diallo
+                        {formatDate(invoice.issueDate)} par Philippe Noukoué
                       </p>
                     </div>
                   </div>
@@ -280,7 +280,7 @@ export default function InvoiceDetailClient({
                         Transmise par email avec PDF
                       </p>
                       <p className="text-[11px] text-slate-400">
-                        À {invoice.clientEmail || "client@entreprise.com"}
+                        À {invoice.clientEmail || "client@entreprise.cm"}
                       </p>
                     </div>
                   </div>
@@ -306,14 +306,14 @@ export default function InvoiceDetailClient({
           {/* Payment Modal */}
           {paymentModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900 dark:border dark:border-slate-800">
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900 dark:border dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                    Enregistrer un paiement
+                    Enregistrer un paiement (Cameroun)
                   </h3>
                   <button
                     onClick={() => setPaymentModalOpen(false)}
-                    className="rounded-lg p-1 text-slate-400 hover:text-slate-600"
+                    className="rounded-lg p-1 text-slate-400 hover:text-slate-600 hover:scale-110 active:scale-95 transition-all"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -345,26 +345,25 @@ export default function InvoiceDetailClient({
                       onChange={(e) => setPaymentMethod(e.target.value)}
                       className="mt-1 w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3 text-xs font-semibold text-slate-900 focus:border-blue-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                     >
-                      <option value="wave">Wave Mobile Money</option>
-                      <option value="orange_money">Orange Money</option>
-                      <option value="mtn_momo">MTN Mobile Money</option>
+                      <option value="mtn_momo">MTN Mobile Money Cameroun (*126#)</option>
+                      <option value="orange_money">Orange Money Cameroun (*150#)</option>
                       <option value="bank_transfer">
-                        Virement Bancaire (RIB)
+                        Virement Bancaire (Afriland / UBA / BICEC)
                       </option>
                       <option value="cash">Espèces</option>
-                      <option value="check">Chèque</option>
+                      <option value="check">Chèque certifié</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                      Référence de transaction (ID Wave / OM / Chèque)
+                      Référence de transaction (ID MTN MoMo / Orange Money)
                     </label>
                     <input
                       type="text"
                       value={paymentRef}
                       onChange={(e) => setPaymentRef(e.target.value)}
-                      placeholder="ex: WV-SN-098273"
+                      placeholder="ex: MTN-CM-098273"
                       className="mt-1 w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3 text-xs text-slate-900 focus:border-blue-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                     />
                   </div>
@@ -386,13 +385,13 @@ export default function InvoiceDetailClient({
                     <button
                       type="button"
                       onClick={() => setPaymentModalOpen(false)}
-                      className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                      className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 active:scale-95 dark:border-slate-700 dark:text-slate-300"
                     >
                       Annuler
                     </button>
                     <button
                       type="submit"
-                      className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 shadow-md transition-all"
+                      className="rounded-xl bg-emerald-600 px-4.5 py-2 text-xs font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/30 active:translate-y-0 active:scale-95"
                     >
                       Confirmer le paiement
                     </button>

@@ -104,19 +104,22 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="space-y-6">
           {/* Logo Brand */}
           <div className="flex items-center justify-between px-2">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-700 to-blue-500 text-white shadow-md shadow-blue-500/25 ring-2 ring-blue-500/20">
-                <Sparkles className="h-5 w-5 fill-white/20 text-white" />
+            <Link
+              href="/"
+              className="flex items-center gap-3 group transition-transform duration-200 hover:scale-102"
+            >
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-700 to-blue-500 text-white shadow-md shadow-blue-500/25 ring-2 ring-blue-500/20 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-500/40 group-hover:ring-blue-500/40">
+                <Sparkles className="h-5 w-5 fill-white/20 text-white transition-transform duration-300 group-hover:rotate-12" />
               </div>
               <div className="flex flex-col">
                 <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
                   PNO Facture
-                  <span className="rounded-md bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                  <span className="rounded-md bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300 transition-colors group-hover:bg-blue-600 group-hover:text-white">
                     PRO
                   </span>
                 </span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">
-                  Zone FCFA • B2B
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  Cameroun • CEMAC FCFA
                 </span>
               </div>
             </Link>
@@ -124,23 +127,23 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             {/* Mobile Close Button */}
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 lg:hidden"
+              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 transition-all hover:scale-105 active:scale-95 lg:hidden"
               aria-label="Fermer le menu"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
-          {/* Search Bar matching the 'creatinf' inspiration */}
+          {/* Interactive Search Bar with Hover Effects */}
           <div className="relative px-1">
-            <div className="relative flex items-center">
-              <Search className="absolute left-3.5 h-4 w-4 text-slate-400" />
+            <div className="group/search relative flex items-center cursor-pointer transition-all duration-300">
+              <Search className="absolute left-3.5 h-4 w-4 text-slate-400 transition-all duration-300 group-hover/search:text-blue-600 group-hover/search:scale-110" />
               <input
                 type="text"
                 placeholder="Rechercher..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2.5 pl-10 pr-10 text-xs font-medium text-slate-800 placeholder-slate-400 transition-all focus:border-blue-500 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:bg-slate-800"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2.5 pl-10 pr-10 text-xs font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 group-hover/search:border-blue-400 group-hover/search:bg-white group-hover/search:shadow-md group-hover/search:shadow-blue-500/10 focus:border-blue-600 focus:bg-white focus:outline-hidden focus:ring-3 focus:ring-blue-500/20 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-200 dark:placeholder-slate-500 dark:group-hover/search:border-blue-500 dark:group-hover/search:bg-slate-800 dark:focus:bg-slate-800"
               />
-              <span className="absolute right-2.5 rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 shadow-2xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
+              <span className="absolute right-2.5 rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 shadow-2xs transition-all duration-300 group-hover/search:border-blue-300 group-hover/search:text-blue-600 group-hover/search:shadow-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:group-hover/search:text-blue-400">
                 ⌘ K
               </span>
             </div>
@@ -167,19 +170,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                       if (onClose) onClose();
                     }}
                     className={cn(
-                      "group flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all duration-150",
+                      "group flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-98",
                       isActive
-                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-                        : "text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-200"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/25 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30"
+                        : "text-slate-600 hover:bg-blue-50/70 hover:text-blue-700 hover:shadow-2xs dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-blue-400"
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <Icon
                         className={cn(
-                          "h-4 w-4 transition-transform group-hover:scale-105",
+                          "h-4 w-4 transition-transform duration-200 group-hover:scale-110",
                           isActive
                             ? "text-white"
-                            : "text-slate-400 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200"
+                            : "text-slate-400 group-hover:text-blue-600 dark:text-slate-400 dark:group-hover:text-blue-400"
                         )}
                       />
                       <span>{item.title}</span>
@@ -188,10 +191,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     {item.badge && (
                       <span
                         className={cn(
-                          "rounded-full px-2 py-0.5 text-[10px] font-bold",
+                          "rounded-full px-2 py-0.5 text-[10px] font-bold transition-transform duration-200 group-hover:scale-105",
                           isActive
                             ? "bg-white/20 text-white"
-                            : "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+                            : "bg-blue-100 text-blue-700 group-hover:bg-blue-200 dark:bg-blue-950 dark:text-blue-300"
                         )}
                       >
                         {item.badge}
@@ -209,22 +212,22 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="space-y-1 px-1">
             <Link
               href="/aide"
-              className="flex items-center gap-3 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              className="flex items-center gap-3 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200 hover:translate-x-1 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
             >
-              <HelpCircle className="h-4 w-4 text-slate-400" />
+              <HelpCircle className="h-4 w-4 text-slate-400 transition-transform group-hover:rotate-12" />
               <span>Aide & Support</span>
             </Link>
 
             <Link
               href="/parametres"
-              className="flex items-center gap-3 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              className="flex items-center gap-3 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200 hover:translate-x-1 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
             >
-              <Settings className="h-4 w-4 text-slate-400" />
+              <Settings className="h-4 w-4 text-slate-400 transition-transform group-hover:rotate-45" />
               <span>Paramètres</span>
             </Link>
 
             {/* Dark Mode Switcher */}
-            <div className="flex items-center justify-between rounded-xl px-3.5 py-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+            <div className="flex items-center justify-between rounded-xl px-3.5 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
               <div className="flex items-center gap-3">
                 {isDarkMode ? (
                   <Moon className="h-4 w-4 text-blue-400" />
@@ -238,7 +241,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 onClick={toggleDarkMode}
                 aria-label="Basculer le mode sombre"
                 className={cn(
-                  "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden",
+                  "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-hidden",
                   isDarkMode ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
                 )}
               >
@@ -252,23 +255,23 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
           </div>
 
-          {/* User Profile Card matching the inspiration layout */}
-          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50/80 p-2.5 dark:border-slate-800 dark:bg-slate-800/50">
+          {/* User Profile Card: Philippe Noukoué - Cameroun */}
+          <div className="group/profile flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50/80 p-2.5 transition-all duration-200 hover:border-blue-300 hover:bg-white hover:shadow-md hover:shadow-blue-500/10 dark:border-slate-800 dark:bg-slate-800/50 dark:hover:border-slate-700">
             <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 text-xs font-bold text-white shadow-xs">
-                OD
+              <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-xs font-bold text-white shadow-xs transition-transform duration-200 group-hover/profile:scale-105">
+                PN
               </div>
               <div className="flex flex-col truncate">
-                <span className="truncate text-xs font-bold text-slate-800 dark:text-slate-100">
-                  Ousmane Diallo
+                <span className="truncate text-xs font-bold text-slate-800 dark:text-slate-100 group-hover/profile:text-blue-600 transition-colors">
+                  Philippe Noukoué
                 </span>
                 <span className="truncate text-[10px] text-slate-500 dark:text-slate-400">
-                  PNO Solutions S.A.R.L
+                  PNO Solutions Cameroun
                 </span>
               </div>
             </div>
             <button
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-1"
               aria-label="Options du profil"
             >
               <ChevronsUpDown className="h-4 w-4" />
