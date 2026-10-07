@@ -7,6 +7,9 @@ export const metadata: Metadata = {
     "Application SaaS de facturation pour entrepreneurs africains. Suivi des factures, devis, paiements partiels et trésorerie en FCFA.",
 };
 
+import { Toaster } from "sonner";
+import { CommandPalette } from "../components/shared/CommandPalette";
+
 export default function RootLayout({
   children,
 }: {
@@ -24,6 +27,8 @@ export default function RootLayout({
       </head>
       <body className="font-['Plus_Jakarta_Sans',sans-serif] antialiased min-h-screen bg-slate-50 dark:bg-slate-950">
         {children}
+        <CommandPalette />
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );

@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Menu, Plus, Bell, Calendar, ChevronDown, FileCheck2 } from "lucide-react";
+import { Menu, Plus, Bell, Calendar, ChevronDown, FileCheck2, Search } from "lucide-react";
 
 interface TopbarProps {
   onOpenMobileMenu?: () => void;
@@ -27,6 +27,19 @@ export function Topbar({ onOpenMobileMenu }: TopbarProps) {
           <span>/</span>
           <span className="text-slate-500">Vue d'ensemble Cameroun</span>
         </div>
+
+        {/* Global Quick Search Button (⌘K) */}
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
+          className="hidden md:flex items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50/70 px-2.5 py-1 text-xs text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-400 hover:bg-white hover:text-slate-700 hover:shadow-xs active:translate-y-0 dark:border-slate-800 dark:bg-slate-800/40 dark:hover:bg-slate-800 dark:hover:text-slate-300 ml-4"
+        >
+          <Search className="h-3.5 w-3.5 text-slate-400" />
+          <span>Recherche rapide...</span>
+          <kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.2 text-[9px] font-bold text-slate-400 dark:border-slate-700 dark:bg-slate-800">
+            ⌘K
+          </kbd>
+        </button>
       </div>
 
       {/* Right: Period selector, Notifications, New Invoice CTA */}

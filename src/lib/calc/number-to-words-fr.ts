@@ -2,8 +2,8 @@
  * Conversion de nombres entiers en toutes lettres en français
  * Règles spécifiques :
  * - "mille" est invariable (jamais de 's')
- * - "cent" prend un 's' si multiplié et non suivi (deux cents, deux cent dix)
- * - "quatre-vingts" prend un 's' si non suivi (quatre-vingts, quatre-vingt-deux)
+ * - "cent" prend un 's' si multiplié et non suivi (deux cents, deux cent dix, deux cent mille)
+ * - "quatre-vingts" prend un 's' si non suivi (quatre-vingts, quatre-vingt-deux, quatre-vingt mille)
  * - "et un" pour 21, 31, 41, 51, 61, 71
  */
 
@@ -43,7 +43,7 @@ const TENS = [
   "quatre-vingt-dix",
 ];
 
-function convertBelowThousand(n: number): string {
+function convertBelowThousand(n: number, isFollowed = false): string {
   if (n === 0) return "";
 
   let result = "";
@@ -56,7 +56,7 @@ function convertBelowThousand(n: number): string {
       result += "cent";
     } else {
       result += UNITS[hundreds] + " cent";
-      if (remainder === 0) {
+      if (remainder === 0 && !isFollowed) {
         result += "s";
       }
     }
@@ -88,7 +88,7 @@ function convertBelowThousand(n: number): string {
       const unit = isNinety ? remainder - 80 : remainder - 80;
 
       if (remainder === 80) {
-        result += "quatre-vingts";
+        result += isFollowed ? "quatre-vingt" : "quatre-vingts";
       } else if (isNinety) {
         result += "quatre-vingt-" + UNITS[remainder - 80];
       } else {
@@ -113,23 +113,26 @@ export function numberToWordsFr(amount: number): string {
   const parts: string[] = [];
 
   if (billions > 0) {
-    parts.push(convertBelowThousand(billions) + (billions > 1 ? " milliards" : " milliard"));
+    // "milliard" is a noun
+    parts.push(convertBelowThousand(billions, false) + (billions > 1 ? " milliards" : " milliard"));
   }
 
   if (millions > 0) {
-    parts.push(convertBelowThousand(millions) + (millions > 1 ? " millions" : " million"));
+    // "million" is a noun
+    parts.push(convertBelowThousand(millions, false) + (millions > 1 ? " millions" : " million"));
   }
 
   if (thousands > 0) {
     if (thousands === 1) {
       parts.push("mille");
     } else {
-      parts.push(convertBelowThousand(thousands) + " mille");
+      // "mille" is followed, so cent/quatre-vingts inside thousands are invariable
+      parts.push(convertBelowThousand(thousands, true) + " mille");
     }
   }
 
   if (remainder > 0) {
-    parts.push(convertBelowThousand(remainder));
+    parts.push(convertBelowThousand(remainder, false));
   }
 
   const words = parts.join(" ").trim();

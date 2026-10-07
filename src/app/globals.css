@@ -72,3 +72,46 @@ body {
   background-color: #0f172a;
   color: #94a3b8;
 }
+
+/* Print Styles for Perfect PDF Export & Printing */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 1.2cm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11pt !important;
+  }
+
+  /* Hide navigation, sidebars, headers, and UI interaction buttons */
+  header,
+  aside,
+  nav,
+  button,
+  .no-print,
+  [data-sonner-toaster],
+  .fixed,
+  .sticky {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Make invoice sheet expand to full paper page */
+  .print\:w-full {
+    width: 100% !important;
+  }
+
+  /* Remove shadows and borders that don't look clean on paper */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}

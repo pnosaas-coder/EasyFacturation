@@ -42,6 +42,8 @@ export const mockRecentInvoices: Invoice[] = [
     total: 4_531_500,
     amountPaid: 0,
     balanceDue: 4_531_500,
+    createdAt: "2026-10-04T09:00:00Z",
+    updatedAt: "2026-10-04T09:00:00Z",
     items: [
       {
         id: "it_1",
@@ -80,6 +82,8 @@ export const mockRecentInvoices: Invoice[] = [
     total: 5_664_375,
     amountPaid: 5_664_375,
     balanceDue: 0,
+    createdAt: "2026-09-28T10:00:00Z",
+    updatedAt: "2026-09-28T10:00:00Z",
     items: [
       {
         id: "it_3",
@@ -109,6 +113,8 @@ export const mockRecentInvoices: Invoice[] = [
     total: 1_431_000,
     amountPaid: 0,
     balanceDue: 1_431_000,
+    createdAt: "2026-09-12T11:00:00Z",
+    updatedAt: "2026-09-12T11:00:00Z",
     items: [
       {
         id: "it_4",
@@ -138,6 +144,8 @@ export const mockRecentInvoices: Invoice[] = [
     total: 2_385_000,
     amountPaid: 1_500_000,
     balanceDue: 885_000,
+    createdAt: "2026-09-05T08:30:00Z",
+    updatedAt: "2026-09-05T08:30:00Z",
     items: [
       {
         id: "it_5",
@@ -167,6 +175,8 @@ export const mockRecentInvoices: Invoice[] = [
     total: 775_125,
     amountPaid: 0,
     balanceDue: 775_125,
+    createdAt: "2026-10-06T14:00:00Z",
+    updatedAt: "2026-10-06T14:00:00Z",
     items: [
       {
         id: "it_6",

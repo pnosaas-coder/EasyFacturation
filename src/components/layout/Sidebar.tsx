@@ -136,17 +136,20 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Interactive Search Bar with Hover Effects */}
           <div className="relative px-1">
-            <div className="group/search relative flex items-center cursor-pointer transition-all duration-300">
+            <button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("open-command-palette"));
+                if (onClose) onClose();
+              }}
+              className="group/search relative flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50/70 py-2.5 pl-10 pr-3 text-xs font-medium text-slate-400 transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-400 hover:bg-white hover:text-slate-800 hover:shadow-md hover:shadow-blue-500/10 active:translate-y-0 active:scale-98 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-500 dark:hover:border-blue-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            >
               <Search className="absolute left-3.5 h-4 w-4 text-slate-400 transition-all duration-300 group-hover/search:text-blue-600 group-hover/search:scale-110" />
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2.5 pl-10 pr-10 text-xs font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 group-hover/search:border-blue-400 group-hover/search:bg-white group-hover/search:shadow-md group-hover/search:shadow-blue-500/10 focus:border-blue-600 focus:bg-white focus:outline-hidden focus:ring-3 focus:ring-blue-500/20 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-200 dark:placeholder-slate-500 dark:group-hover/search:border-blue-500 dark:group-hover/search:bg-slate-800 dark:focus:bg-slate-800"
-              />
-              <span className="absolute right-2.5 rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 shadow-2xs transition-all duration-300 group-hover/search:border-blue-300 group-hover/search:text-blue-600 group-hover/search:shadow-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:group-hover/search:text-blue-400">
+              <span className="text-xs">Rechercher...</span>
+              <span className="rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 shadow-2xs transition-all duration-300 group-hover/search:border-blue-300 group-hover/search:text-blue-600 group-hover/search:shadow-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:group-hover/search:text-blue-400">
                 ⌘ K
               </span>
-            </div>
+            </button>
           </div>
 
           {/* Menu Links */}

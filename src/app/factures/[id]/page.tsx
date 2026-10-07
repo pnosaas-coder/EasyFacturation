@@ -1,29 +1,25 @@
-import React, { Suspense } from "react";
+import React from "react";
+import { connection } from "next/server";
 import InvoiceDetailClient from "./InvoiceDetailClient";
-import { mockRecentInvoices } from "../../../mocks/fixtures";
-
-export function generateStaticParams() {
-  return mockRecentInvoices.map((inv) => ({
-    id: inv.id,
-  }));
-}
+import { getInvoiceById } from "../../../lib/data/invoices";
+import { getSettings } from "../../../lib/data/settings";
+import { notFound } from "next/navigation";
 
 export default async function InvoiceDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const resolvedParams = await params;
+  await connection();
+  const { id } = await params;
+  const [invoice, settings] = await Promise.all([
+    getInvoiceById(id),
+    getSettings(),
+  ]);
 
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-slate-50 text-xs font-semibold text-slate-500">
-          Chargement de la facture...
-        </div>
-      }
-    >
-      <InvoiceDetailClient invoiceId={resolvedParams.id} />
-    </Suspense>
-  );
+  if (!invoice) {
+    notFound();
+  }
+
+  return <InvoiceDetailClient initialInvoice={invoice} settings={settings} />;
 }

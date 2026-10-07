@@ -64,9 +64,60 @@ export function InvoicePreview({
     orangeMoneyPhone: "+237 691114908 (Orange Money)",
     bankRib: "CM21 10005 00012 01234567890 45 (Afriland First Bank)",
   },
+  status = "draft",
 }: InvoicePreviewProps) {
+  const getStampConfig = () => {
+    switch (status) {
+      case "paid":
+        return {
+          label: "FACTURE ACQUITTÉE / PAYÉE",
+          sub: "Règlement intégral perçu",
+          color: "border-emerald-600 text-emerald-700 bg-emerald-50/70 dark:border-emerald-500 dark:text-emerald-400 dark:bg-emerald-950/40",
+        };
+      case "partial":
+        return {
+          label: "ACOMPTE REÇU / PARTIEL",
+          sub: "Solde restant dû en attente",
+          color: "border-amber-600 text-amber-700 bg-amber-50/70 dark:border-amber-500 dark:text-amber-400 dark:bg-amber-950/40",
+        };
+      case "overdue":
+        return {
+          label: "IMPAYÉE • EN RETARD",
+          sub: "Échéance dépassée",
+          color: "border-rose-600 text-rose-700 bg-rose-50/70 dark:border-rose-500 dark:text-rose-400 dark:bg-rose-950/40",
+        };
+      case "cancelled":
+        return {
+          label: "DOCUMENT ANNULÉ",
+          sub: "Sans valeur commerciale",
+          color: "border-slate-500 text-slate-600 bg-slate-100/70 dark:border-slate-600 dark:text-slate-400 dark:bg-slate-800/40",
+        };
+      case "draft":
+      default:
+        return {
+          label: "PROFORMA / BROUILLON",
+          sub: "Document provisoire non comptabilisé",
+          color: "border-slate-400 text-slate-500 bg-slate-50/60 dark:border-slate-600 dark:text-slate-400 dark:bg-slate-800/30",
+        };
+    }
+  };
+
+  const stamp = getStampConfig();
+
   return (
-    <div className="relative mx-auto w-full max-w-[800px] rounded-2xl border border-slate-200 bg-white p-8 text-slate-800 shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 print:shadow-none print:border-none transition-all duration-300 hover:shadow-2xl hover:shadow-slate-500/10">
+    <div className="relative mx-auto w-full max-w-[800px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 text-slate-800 shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 print:shadow-none print:border-none print:p-0 print:max-w-none transition-all duration-300 hover:shadow-2xl hover:shadow-slate-500/10">
+      {/* Official Status Stamp (Watermark) */}
+      <div className="pointer-events-none absolute right-8 top-28 sm:top-24 z-10 select-none opacity-85 rotate-[-12deg] transition-transform">
+        <div className={`rounded-xl border-2 sm:border-3 border-dashed px-4 py-2 sm:px-6 sm:py-3 text-center shadow-xs backdrop-blur-xs ${stamp.color}`}>
+          <div className="font-mono text-xs sm:text-sm font-black tracking-widest uppercase">
+            {stamp.label}
+          </div>
+          <div className="text-[9px] sm:text-[10px] font-bold tracking-tight opacity-90">
+            {stamp.sub}
+          </div>
+        </div>
+      </div>
+
       {/* Top Header */}
       <div className="flex items-start justify-between border-b border-slate-200 pb-6 dark:border-slate-800">
         <div>
