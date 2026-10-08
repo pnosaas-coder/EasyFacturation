@@ -19,7 +19,11 @@ import {
   ChevronsUpDown,
   X,
   Sparkles,
+  LogOut,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { logoutAction } from "../../lib/actions/auth";
 import { cn } from "../../lib/utils";
 import { useTheme } from "../shared/ThemeProvider";
 
@@ -29,9 +33,25 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const { theme, setTheme, toggleTheme } = useTheme();
   const isDarkMode = theme === "dark";
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setLoggingOut(true);
+      await logoutAction();
+      toast.success("Vous avez été déconnecté avec succès.");
+      router.push("/login");
+      router.refresh();
+    } catch {
+      toast.error("Erreur lors de la déconnexion.");
+    } finally {
+      setLoggingOut(false);
+    }
+  };
 
   const menuItems = [
     {
@@ -294,10 +314,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               </div>
             </div>
             <button
-              className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-1"
-              aria-label="Options du profil"
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all p-1.5 rounded-lg cursor-pointer"
+              title="Se déconnecter"
+              aria-label="Se déconnecter"
             >
-              <ChevronsUpDown className="h-4 w-4" />
+              <LogOut className={`h-4 w-4 ${loggingOut ? "animate-spin" : ""}`} />
             </button>
           </div>
         </div>

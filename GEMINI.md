@@ -132,6 +132,20 @@ L'application répond aux réalités locales :
 * **Script de Seeding Automatisé :**
   * `scripts/seed-supabase.mjs` permet de peupler ou réinitialiser instantanément la base Supabase avec les données canoniques de Prunus Engineering SARL.
 
+### 2.12 Authentification Sécurisée Supabase & Protection des Pages (`/login`)
+* **Page de Connexion / Inscription Dédiée (`/login`) :**
+  * Design SaaS moderne : conteneur glassmorphism, dégradés d'arrière-plan, mode clair et sombre avec sélecteur de thème dédié.
+  * Commutateur d'onglets instantané entre *« Se connecter »* et *« Créer un compte »*.
+  * Raccourci 1-clic *« Connexion Fondateur »* pré-remplissant automatiquement le compte de Philippe NOUGOUE (`contact@prunus-engineering.cm`).
+  * Champ mot de passe interactif avec icônes de masquage/affichage (œil), alertes d'erreurs en bandeau et notifications riches Sonner.
+* **Protection par Middleware Universel (`src/middleware.ts`) :**
+  * Interception globale de toutes les routes de l'application (`/`, `/factures/*`, `/devis/*`, `/clients/*`, `/produits/*`, `/recurrentes/*`, `/rapports/*`, `/parametres/*`).
+  * Redirection automatique des requêtes non authentifiées vers `/login?redirectTo=...`.
+  * Redirection automatique des utilisateurs déjà connectés accédant à `/login` vers la page d'accueil (`/`).
+* **Gestion des Sessions & Déconnexion (`@supabase/ssr`) :**
+  * Gestion déclarative des cookies de session chiffrés pour les Server Components et Server Actions.
+  * Bouton de déconnexion ergonomique avec icône `LogOut` intégré directement à la carte profil du gérant dans la barre latérale (`Sidebar`).
+
 ---
 
 ## 3. Structure des Fichiers & Architecture
@@ -313,8 +327,8 @@ Lorsque vous travaillez sur ce projet, vous devez **TOUJOURS** appliquer sans d�
 
 ### Règle 5 : Qualité du Code & Validation Avant Livraison
 * Toujours exécuter `npx tsc --noEmit` après vos modifications pour vérifier qu'aucune erreur de typage TypeScript n'a été introduite.
-* Toujours exécuter `npm test` pour s'assurer que l'intégralité de la suite de tests unitaires (45 tests) continue de passer au vert.
+* Toujours exécuter `npm test` pour s'assurer que l'intégralité de la suite de tests unitaires (50 tests) continue de passer au vert.
 * Respecter la convention Tailwind v4 : ne pas créer de `tailwind.config.js` obsolète.
 
 ---
-*Dernière mise à jour : Architecture Full-Stack Supabase Cloud validée & opérationnelle (45 tests au vert).*
+*Dernière mise à jour : Authentification Supabase, protection middleware & persistance Full-Stack validées (50 tests au vert).*

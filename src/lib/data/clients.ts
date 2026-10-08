@@ -93,17 +93,36 @@ export async function createClient(input: ClientInput): Promise<Client> {
 }
 
 export async function updateClient(id: string, input: Partial<ClientInput>): Promise<Client | null> {
-  const store = getStore();
-  const client = store.clients.find((c) => c.id === id);
-  if (!client) return null;
+  const existing = await getClientById(id);
+  if (!existing) return null;
 
-  Object.assign(client, input);
+  const client: Client = {
+    ...existing,
+    name: input.name ?? existing.name,
+    contactName: input.contactName !== undefined ? input.contactName : existing.contactName,
+    email: input.email !== undefined ? input.email : existing.email,
+    phone: input.phone !== undefined ? input.phone : existing.phone,
+    address: input.address !== undefined ? input.address : existing.address,
+    city: input.city !== undefined ? input.city : existing.city,
+    country: input.country ?? existing.country,
+    taxId: input.taxId !== undefined ? input.taxId : existing.taxId,
+    rccm: input.rccm !== undefined ? input.rccm : existing.rccm,
+    notes: input.notes !== undefined ? input.notes : existing.notes,
+  };
 
   try {
     const supabase = createServerClient();
     await supabase.from("clients").update(mapClientToRow(client)).eq("id", id);
   } catch {
     // Fallback to store
+  }
+
+  const store = getStore();
+  const index = store.clients.findIndex((c) => c.id === id);
+  if (index !== -1) {
+    store.clients[index] = client;
+  } else {
+    store.clients.push(client);
   }
 
   return client;

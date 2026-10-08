@@ -247,11 +247,13 @@ export default function InvoiceDetailClient({
               </a>
 
               <button
+                type="button"
                 onClick={() => window.print()}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:shadow-md active:translate-y-0 active:scale-95 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50/80 px-3.5 py-2 text-xs font-bold text-blue-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-400 hover:bg-blue-100 hover:shadow-md hover:shadow-blue-500/15 active:translate-y-0 active:scale-95 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/50 cursor-pointer"
+                title="Télécharger la facture officielle en PDF ou l'imprimer"
               >
-                <Printer className="h-4 w-4 text-slate-500" />
-                <span>Imprimer / PDF</span>
+                <Download className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <span>Télécharger PDF / Imprimer</span>
               </button>
 
               <button

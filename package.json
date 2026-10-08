@@ -11,6 +11,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
     "big.js": "^7.0.1",
     "clsx": "^2.1.1",
