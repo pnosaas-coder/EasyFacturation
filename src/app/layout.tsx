@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 
 import { Toaster } from "sonner";
 import { CommandPalette } from "../components/shared/CommandPalette";
+import { ThemeProvider } from "../components/shared/ThemeProvider";
 
 export default function RootLayout({
   children,
@@ -16,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className="scroll-smooth">
+    <html lang="fr" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -24,11 +25,18 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('pno_theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})()`,
+          }}
+        />
       </head>
-      <body className="font-['Plus_Jakarta_Sans',sans-serif] antialiased min-h-screen bg-slate-50 dark:bg-slate-950">
-        {children}
-        <CommandPalette />
-        <Toaster position="top-right" richColors closeButton />
+      <body className="font-['Plus_Jakarta_Sans',sans-serif] antialiased min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
+        <ThemeProvider>
+          {children}
+          <CommandPalette />
+          <Toaster position="top-right" richColors closeButton />
+        </ThemeProvider>
       </body>
     </html>
   );

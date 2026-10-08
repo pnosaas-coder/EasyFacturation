@@ -21,6 +21,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { useTheme } from "../shared/ThemeProvider";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -29,14 +30,8 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    if (typeof document !== "undefined") {
-      document.documentElement.classList.toggle("dark");
-    }
-  };
+  const { theme, toggleTheme } = useTheme();
+  const isDarkMode = theme === "dark";
 
   const menuItems = [
     {
@@ -215,17 +210,33 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="space-y-1 px-1">
             <Link
               href="/aide"
-              className="flex items-center gap-3 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200 hover:translate-x-1 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              onClick={() => {
+                if (onClose) onClose();
+              }}
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-200 hover:translate-x-1",
+                pathname === "/aide"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-600/25 hover:bg-blue-700"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              )}
             >
-              <HelpCircle className="h-4 w-4 text-slate-400 transition-transform group-hover:rotate-12" />
+              <HelpCircle className={cn("h-4 w-4", pathname === "/aide" ? "text-white" : "text-slate-400")} />
               <span>Aide & Support</span>
             </Link>
 
             <Link
               href="/parametres"
-              className="flex items-center gap-3 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200 hover:translate-x-1 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              onClick={() => {
+                if (onClose) onClose();
+              }}
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-200 hover:translate-x-1",
+                pathname === "/parametres"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-600/25 hover:bg-blue-700"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              )}
             >
-              <Settings className="h-4 w-4 text-slate-400 transition-transform group-hover:rotate-45" />
+              <Settings className={cn("h-4 w-4", pathname === "/parametres" ? "text-white" : "text-slate-400")} />
               <span>Paramètres</span>
             </Link>
 
@@ -237,12 +248,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 ) : (
                   <Sun className="h-4 w-4 text-amber-500" />
                 )}
-                <span>Mode sombre</span>
+                <span>{isDarkMode ? "Mode sombre" : "Mode clair"}</span>
               </div>
               <button
                 type="button"
-                onClick={toggleDarkMode}
-                aria-label="Basculer le mode sombre"
+                onClick={toggleTheme}
+                aria-label="Basculer le mode sombre/clair"
                 className={cn(
                   "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-hidden",
                   isDarkMode ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"

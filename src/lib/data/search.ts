@@ -63,6 +63,15 @@ export async function globalSearch(query: string): Promise<SearchResultItem[]> {
         badge: "Fiscalité",
         badgeColor: "slate",
       },
+      {
+        id: "act-help",
+        type: "action",
+        title: "Aide & Support technique",
+        subtitle: "FAQ fiscale, assistance WhatsApp Philippe NOUGOUE (+237 677481161)",
+        href: "/aide",
+        badge: "Support",
+        badgeColor: "emerald",
+      },
     ];
 
     const recentInvoices: SearchResultItem[] = store.invoices.slice(0, 3).map((inv) => ({
@@ -208,6 +217,15 @@ export async function globalSearch(query: string): Promise<SearchResultItem[]> {
       href: "/parametres",
       badge: "Config",
       badgeColor: "slate",
+    },
+    {
+      id: "act-help",
+      type: "action",
+      title: "Aide & Support technique",
+      subtitle: "Questions fréquentes, assistance WhatsApp Philippe NOUGOUE (+237 677481161)",
+      href: "/aide",
+      badge: "Support",
+      badgeColor: "emerald",
     },
   ];
 

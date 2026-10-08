@@ -2,13 +2,16 @@
 
 import React from "react";
 import Link from "next/link";
-import { Menu, Plus, Bell, Calendar, ChevronDown, FileCheck2, Search } from "lucide-react";
+import { Menu, Plus, Bell, Calendar, ChevronDown, FileCheck2, Search, Sun, Moon } from "lucide-react";
+import { useTheme } from "../shared/ThemeProvider";
 
 interface TopbarProps {
   onOpenMobileMenu?: () => void;
 }
 
 export function Topbar({ onOpenMobileMenu }: TopbarProps) {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/85 px-4 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/85 sm:px-6">
       {/* Left: Mobile Menu Trigger + Breadcrumb */}
@@ -52,6 +55,21 @@ export function Topbar({ onOpenMobileMenu }: TopbarProps) {
           <Calendar className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
           <span>Ce mois-ci (Octobre 2026)</span>
           <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+        </button>
+
+        {/* Theme Toggle Button */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
+          className="rounded-xl border border-slate-200 p-2 text-slate-500 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-600 hover:shadow-md hover:shadow-blue-500/10 active:translate-y-0 active:scale-95 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-amber-400"
+          title={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
+        >
+          {theme === "dark" ? (
+            <Sun className="h-4 w-4 text-amber-400 transition-transform duration-200 hover:rotate-45" />
+          ) : (
+            <Moon className="h-4 w-4 text-slate-600 transition-transform duration-200 hover:-rotate-12" />
+          )}
         </button>
 
         {/* Notification Icon with rich hover */}
