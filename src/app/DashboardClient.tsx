@@ -71,7 +71,7 @@ export function DashboardClient({
         <Topbar onOpenMobileMenu={() => setMobileMenuOpen(true)} />
 
         {/* Dashboard Body */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-7 max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
           {/* Welcome & Action Banner - Philippe NOUGOUE (Cameroun) */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-2xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-6 text-white shadow-lg shadow-blue-500/15">
             <div className="space-y-1.5">

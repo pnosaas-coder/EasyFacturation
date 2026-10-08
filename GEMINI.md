@@ -39,8 +39,9 @@ L'application répond aux réalités locales :
   * *Total encaissé* (montant réel collecté sur le compte).
   * *Reste à recouvrer / En attente* (créances clients saines).
   * *Factures en retard* (nombre et montant total avec badge d'alerte rouge clignotant).
-* **Ligne 1 d'Analyses & Graphiques (Côte à côte) :**
-  * **Flux de facturation & encaissements (`RevenueChart`)** : Histogramme comparatif sur 6 mois (Mai à Octobre) avec sélecteur de focus mensuel, calcul du taux d'encaissement et estimation nette de la TVA.
+* **Ligne 1 d'Analyses & Graphiques (Côte à côte, Même Hauteur Calibrée) :**
+  * **Alignement & Hauteur de Référence :** Les deux cartes (`RevenueChart` et `StatusDonutChart`) partagent la même hauteur uniforme (`h-full` avec `items-stretch`), calibrée directement sur la hauteur compacte de la répartition par statut. Le rythme vertical resserré fait remonter la table des factures récentes et le widget de relances plus haut dans l'écran (*above the fold*).
+  * **Flux de facturation & encaissements (`RevenueChart`)** : Histogramme comparatif sur 6 mois (Mai à Octobre) avec barres compactes, sélecteur de focus mensuel, calcul du taux d'encaissement et estimation nette de la TVA légale à 19,25%.
   * **Répartition par statut (`StatusDonutChart`)** :
     * Graphique en anneau SVG pur React, **parfaitement recentré horizontalement et verticalement** dans sa carte.
     * Cœur interactif affichant le total émis en FCFA, le nombre de factures ou les détails du statut survolé.
