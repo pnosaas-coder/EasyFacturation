@@ -6,6 +6,7 @@ import {
   createInvoice,
   updateInvoiceStatus,
   deleteDraftInvoice,
+  deleteInvoice,
   duplicateInvoice,
 } from "../data/invoices";
 import { ActionResult, Invoice, InvoiceStatus } from "../domain/types";
@@ -66,6 +67,22 @@ export async function deleteDraftInvoiceAction(id: string): Promise<ActionResult
     return { success: true, data: deleted };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur lors de la suppression.";
+    return { success: false, error: errorMsg };
+  }
+}
+
+export async function deleteInvoiceAction(id: string): Promise<ActionResult<boolean>> {
+  try {
+    const deleted = await deleteInvoice(id);
+    if (!deleted) {
+      return { success: false, error: "Facture introuvable." };
+    }
+    revalidatePath("/");
+    revalidatePath("/factures");
+    revalidatePath("/clients");
+    return { success: true, data: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur lors de la suppression de la facture.";
     return { success: false, error: errorMsg };
   }
 }

@@ -34,7 +34,7 @@ const FAQ_LIST: FAQItem[] = [
     category: "vat",
     question: "Comment est calculée la TVA camerounaise à 19,25% ?",
     answer:
-      "Au Cameroun et en zone CEMAC, le taux légal effectif de TVA est de 19,25% (composé du taux de base de 17,5% majoré de 10% au titre des centimes additionnels communaux - CAC). PNO Facture Pro calcule automatiquement et de façon déterministe cette TVA ligne par ligne avec arrondi commercial half-up à l'entier FCFA le plus proche, évitant tout écart comptable avec le fisc camerounais.",
+      "Au Cameroun et en zone CEMAC, le taux légal effectif de TVA est de 19,25% (composé du taux de base de 17,5% majoré de 10% au titre des centimes additionnels communaux - CAC). EasyFacturation calcule automatiquement et de façon déterministe cette TVA ligne par ligne avec arrondi commercial half-up à l'entier FCFA le plus proche, évitant tout écart comptable avec le fisc camerounais.",
   },
   {
     id: "faq-2",
@@ -143,7 +143,7 @@ export function HelpClient() {
             <div className="relative z-10 max-w-3xl space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md">
                 <HelpCircle className="h-3.5 w-3.5 text-blue-200" />
-                <span>Centre d'Aide & Support Technique PNO Facture Pro</span>
+                <span>Centre d'Aide & Support Technique EasyFacturation</span>
               </div>
               <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
                 Comment pouvons-nous vous aider aujourd'hui ?
@@ -204,7 +204,7 @@ export function HelpClient() {
 
                 <div className="pt-2">
                   <a
-                    href="https://wa.me/237677481161?text=Bonjour%20Philippe%20NOUGOUE,%20j'ai%20besoin%20d'assistance%20sur%20PNO%20Facture%20Pro."
+                    href="https://wa.me/237677481161?text=Bonjour%20Philippe%20NOUGOUE,%20j'ai%20besoin%20d'assistance%20sur%20EasyFacturation."
                     target="_blank"
                     rel="noreferrer"
                     className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 px-4 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 active:scale-95 transition-all"

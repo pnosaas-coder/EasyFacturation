@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { clientInputSchema } from "../validation/client";
-import { createClient, updateClient } from "../data/clients";
+import { createClient, updateClient, deleteClient } from "../data/clients";
 import { ActionResult, Client } from "../domain/types";
 
 export async function createClientAction(input: unknown): Promise<ActionResult<Client>> {
@@ -52,6 +52,22 @@ export async function updateClientAction(
     return { success: true, data: client };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur lors de la mise à jour.";
+    return { success: false, error: errorMsg };
+  }
+}
+
+export async function deleteClientAction(id: string): Promise<ActionResult<boolean>> {
+  try {
+    const success = await deleteClient(id);
+    if (!success) {
+      return { success: false, error: "Client introuvable." };
+    }
+    revalidatePath("/clients");
+    revalidatePath("/factures");
+    revalidatePath("/");
+    return { success: true, data: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur lors de la suppression du client.";
     return { success: false, error: errorMsg };
   }
 }

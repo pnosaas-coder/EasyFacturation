@@ -7,6 +7,8 @@ import { Topbar } from "../../components/layout/Topbar";
 import { formatFCFA } from "../../lib/format/money";
 import { Product } from "../../lib/domain/types";
 import { createProductAction, deleteProductAction } from "../../lib/actions/products";
+import { DeleteConfirmationModal } from "../../components/shared/DeleteConfirmationModal";
+import { Pagination } from "../../components/shared/Pagination";
 import {
   Package,
   Plus,
@@ -82,22 +84,39 @@ export function ProductsListClient({ initialProducts }: ProductsListClientProps)
     }
   };
 
-  const handleDelete = async (id: string, prodName: string) => {
-    if (!confirm(`Supprimer « ${prodName} » du catalogue ?`)) return;
+  // Delete product confirmation state & handler
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [isDeletingProduct, setIsDeletingProduct] = useState(false);
 
-    const toastId = toast.loading("Suppression...");
+  const handleConfirmDeleteProduct = async () => {
+    if (!productToDelete) return;
+    setIsDeletingProduct(true);
+    const toastId = toast.loading("Suppression de la référence...");
     try {
-      const res = await deleteProductAction(id);
+      const res = await deleteProductAction(productToDelete.id);
       if (res.success) {
-        toast.success(`Référence supprimée avec succès.`, { id: toastId });
-        setProducts((prev) => prev.filter((p) => p.id !== id));
+        toast.success(`Référence « ${productToDelete.name} » supprimée avec succès.`, { id: toastId });
+        setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
+        setProductToDelete(null);
       } else {
-        toast.error("Erreur lors de la suppression.", { id: toastId });
+        toast.error(res.error || "Erreur lors de la suppression.", { id: toastId });
       }
     } catch {
       toast.error("Erreur inattendue.", { id: toastId });
+    } finally {
+      setIsDeletingProduct(false);
     }
   };
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(8);
+
+  const totalPages = Math.ceil(filteredProducts.length / pageSize) || 1;
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <div className="flex min-h-screen bg-slate-50/70 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100">
@@ -154,7 +173,7 @@ export function ProductsListClient({ initialProducts }: ProductsListClientProps)
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {filteredProducts.map((p) => (
+                  {paginatedProducts.map((p) => (
                     <tr
                       key={p.id}
                       className="transition-colors hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
@@ -182,8 +201,8 @@ export function ProductsListClient({ initialProducts }: ProductsListClientProps)
                       </td>
                       <td className="py-3.5 px-4 text-right">
                         <button
-                          onClick={() => handleDelete(p.id, p.name)}
-                          className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                          onClick={() => setProductToDelete(p)}
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/50 dark:hover:text-rose-400 transition-all duration-200 hover:scale-115 active:scale-95 cursor-pointer"
                           title="Supprimer la référence"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -192,7 +211,7 @@ export function ProductsListClient({ initialProducts }: ProductsListClientProps)
                     </tr>
                   ))}
 
-                  {filteredProducts.length === 0 && (
+                  {paginatedProducts.length === 0 && (
                     <tr>
                       <td colSpan={5} className="py-8 text-center text-slate-400">
                         Aucun article correspondant dans le catalogue.
@@ -202,9 +221,32 @@ export function ProductsListClient({ initialProducts }: ProductsListClientProps)
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredProducts.length}
+              pageSize={pageSize}
+              pageSizeOptions={[5, 8, 15, 20]}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+            />
           </div>
         </main>
       </div>
+
+      {/* Delete Confirmation Modal for Product */}
+      <DeleteConfirmationModal
+        isOpen={Boolean(productToDelete)}
+        title="Supprimer cette référence ?"
+        description={`Êtes-vous certain de vouloir supprimer « ${productToDelete?.name} » du catalogue ?`}
+        itemLabel={`${productToDelete?.name} • ${productToDelete ? formatFCFA(productToDelete.unitPrice) : ""} HT`}
+        confirmButtonText="Oui, supprimer l'article"
+        isDeleting={isDeletingProduct}
+        onConfirm={handleConfirmDeleteProduct}
+        onClose={() => setProductToDelete(null)}
+      />
 
       {/* Modal Add Product */}
       {modalOpen && (

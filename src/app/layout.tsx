@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PNO Facture Pro | Facturation & Gestion commerciale (zone FCFA)",
+  title: "EasyFacturation | Facturation & Gestion commerciale (zone FCFA)",
   description:
     "Application SaaS de facturation pour entrepreneurs africains. Suivi des factures, devis, paiements partiels et trésorerie en FCFA.",
 };

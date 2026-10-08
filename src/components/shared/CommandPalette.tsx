@@ -176,7 +176,7 @@ export function CommandPalette() {
         <div className="max-h-[380px] overflow-y-auto p-2 space-y-1">
           {isLoading && (
             <div className="py-8 text-center text-xs text-slate-400">
-              Recherche dans le système PNO Facture Pro...
+              Recherche dans le système EasyFacturation...
             </div>
           )}
 
@@ -293,7 +293,7 @@ export function CommandPalette() {
           </div>
 
           <div className="font-semibold text-slate-500 dark:text-slate-400 hidden sm:block">
-            PNO Facture Pro • Zone FCFA
+            EasyFacturation • Zone FCFA
           </div>
         </div>
       </div>

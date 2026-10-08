@@ -1,26 +1,90 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Invoice } from "../../lib/domain/types";
+import { toast } from "sonner";
+import { Invoice, InvoiceStatus } from "../../lib/domain/types";
 import { formatFCFA } from "../../lib/format/money";
 import { formatDate } from "../../lib/format/dates";
-import { StatusBadge } from "../shared/StatusBadge";
+import { StatusDropdown } from "../shared/StatusDropdown";
+import { DeleteConfirmationModal } from "../shared/DeleteConfirmationModal";
+import { Pagination } from "../shared/Pagination";
+import { updateInvoiceStatusAction, deleteInvoiceAction } from "../../lib/actions/invoices";
 import {
   FileText,
   Search,
   Download,
   ArrowUpRight,
   MessageSquare,
+  Trash2,
 } from "lucide-react";
 
 interface RecentInvoicesTableProps {
   invoices: Invoice[];
+  isDashboard?: boolean;
 }
 
-export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
+export function RecentInvoicesTable({
+  invoices: initialInvoices,
+  isDashboard = false,
+}: RecentInvoicesTableProps) {
+  const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(isDashboard ? 5 : 10);
+
+  // Deletion modal state
+  const [invoiceToDelete, setInvoiceToDelete] = useState<Invoice | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    setInvoices(initialInvoices);
+  }, [initialInvoices]);
+
+  // Reset page when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchQuery, pageSize]);
+
+  const handleStatusChange = async (invoiceId: string, newStatus: InvoiceStatus) => {
+    const toastId = toast.loading("Mise à jour du statut en cours...");
+    try {
+      const res = await updateInvoiceStatusAction(invoiceId, newStatus);
+      if (res.success && res.data) {
+        setInvoices((prev) =>
+          prev.map((inv) => (inv.id === invoiceId ? { ...inv, status: newStatus } : inv))
+        );
+        toast.success(`Statut mis à jour avec succès : ${newStatus}`, { id: toastId });
+      } else {
+        toast.error(res.error || "Erreur lors du changement de statut", { id: toastId });
+      }
+    } catch {
+      toast.error("Erreur inattendue", { id: toastId });
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!invoiceToDelete) return;
+    setIsDeleting(true);
+    const toastId = toast.loading("Suppression de la facture en cours...");
+    try {
+      const res = await deleteInvoiceAction(invoiceToDelete.id);
+      if (res.success) {
+        setInvoices((prev) => prev.filter((inv) => inv.id !== invoiceToDelete.id));
+        toast.success(`Facture ${invoiceToDelete.number} supprimée avec succès.`, {
+          id: toastId,
+        });
+        setInvoiceToDelete(null);
+      } else {
+        toast.error(res.error || "Impossible de supprimer la facture.", { id: toastId });
+      }
+    } catch {
+      toast.error("Erreur lors de la suppression.", { id: toastId });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const filteredInvoices = invoices.filter((inv) => {
     // Filter by tab
@@ -40,11 +104,17 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
     return true;
   });
 
+  const totalPages = Math.ceil(filteredInvoices.length / pageSize) || 1;
+  const paginatedInvoices = filteredInvoices.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   const getWhatsAppLink = (inv: Invoice) => {
     const text = encodeURIComponent(
-      `Bonjour ${inv.clientName},\nVoici votre facture ${inv.number} émise par PNO Solutions Cameroun d'un montant de ${formatFCFA(
+      `Bonjour ${inv.clientName},\nVoici votre facture ${inv.number} émise via EasyFacturation (PNO Solutions Cameroun) d'un montant de ${formatFCFA(
         inv.total
-      )}.\nÉchéance : ${formatDate(inv.dueDate)}.\nMerci de procéder au règlement (MTN MoMo, Orange Money ou Virement).`
+      )}.\nÉchéance : ${formatDate(inv.dueDate)}.\nMerci de procéder au règlement (MTN MoMo: *126#, Orange Money: *150# ou Virement).`
     );
     return `https://wa.me/?text=${text}`;
   };
@@ -56,7 +126,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <FileText className="h-4 w-4 text-blue-600" />
-            Dernières factures émises
+            {isDashboard ? "Dernières factures émises" : "Registre des factures"}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Suivi des émissions et encaissements au Cameroun (Douala & Yaoundé)
@@ -77,7 +147,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 ${
+                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer ${
                   activeTab === tab.id
                     ? "bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white"
                     : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
@@ -118,19 +188,19 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
               <th className="py-3 px-4">Émise le</th>
               <th className="py-3 px-4">Échéance</th>
               <th className="py-3 px-4">Montant TTC</th>
-              <th className="py-3 px-4">Statut</th>
+              <th className="py-3 px-4">Statut (Interactif)</th>
               <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-            {filteredInvoices.length === 0 ? (
+            {paginatedInvoices.length === 0 ? (
               <tr>
                 <td colSpan={8} className="py-10 text-center text-slate-400">
                   Aucune facture trouvée pour ces filtres.
                 </td>
               </tr>
             ) : (
-              filteredInvoices.map((inv) => (
+              paginatedInvoices.map((inv) => (
                 <tr
                   key={inv.id}
                   className="group hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors"
@@ -196,9 +266,13 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
                     </div>
                   </td>
 
-                  {/* Status */}
+                  {/* Interactive Status Dropdown */}
                   <td className="py-3.5 px-4">
-                    <StatusBadge status={inv.status} />
+                    <StatusDropdown
+                      type="invoice"
+                      currentStatus={inv.status}
+                      onStatusChange={(newStatus) => handleStatusChange(inv.id, newStatus)}
+                    />
                   </td>
 
                   {/* Actions with rich hover states */}
@@ -219,7 +293,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
                       <button
                         title="Télécharger le PDF"
                         onClick={() => alert(`Téléchargement de la facture ${inv.number} au format PDF.`)}
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/50 dark:hover:text-blue-400 transition-all duration-200 hover:scale-115 active:scale-95"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/50 dark:hover:text-blue-400 transition-all duration-200 hover:scale-115 active:scale-95 cursor-pointer"
                       >
                         <Download className="h-4 w-4" />
                       </button>
@@ -232,6 +306,16 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
                       >
                         <ArrowUpRight className="h-4 w-4" />
                       </Link>
+
+                      {/* Delete action with confirmation modal */}
+                      <button
+                        type="button"
+                        title="Supprimer la facture"
+                        onClick={() => setInvoiceToDelete(inv)}
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/50 dark:hover:text-rose-400 transition-all duration-200 hover:scale-115 active:scale-95 cursor-pointer"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -241,17 +325,41 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesTableProps) {
         </table>
       </div>
 
-      {/* Table Footer */}
-      <div className="flex items-center justify-between p-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500">
-        <span>Affichage de {filteredInvoices.length} sur {invoices.length} factures</span>
-        <Link
-          href="/factures"
-          className="font-bold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 transition-all hover:translate-x-1 flex items-center gap-1"
-        >
-          <span>Voir toutes les factures</span>
-          <span>→</span>
-        </Link>
-      </div>
+      {/* Pagination Footer */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={filteredInvoices.length}
+        pageSize={pageSize}
+        pageSizeOptions={[5, 10, 20]}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+      />
+
+      {/* Optional Dashboard link */}
+      {isDashboard && (
+        <div className="flex items-center justify-end p-3 px-5 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 bg-slate-50/50 dark:bg-slate-800/30 rounded-b-2xl">
+          <Link
+            href="/factures"
+            className="font-bold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 transition-all hover:translate-x-1 flex items-center gap-1"
+          >
+            <span>Accéder au registre complet des factures</span>
+            <span>→</span>
+          </Link>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={Boolean(invoiceToDelete)}
+        title="Supprimer cette facture ?"
+        description={`Êtes-vous sûr de vouloir supprimer la facture ${invoiceToDelete?.number} (${invoiceToDelete?.clientName}) ? Cette opération réajustera automatiquement les métriques comptables du client.`}
+        itemLabel={`${invoiceToDelete?.number} • ${invoiceToDelete ? formatFCFA(invoiceToDelete.total) : ""}`}
+        confirmButtonText="Oui, supprimer la facture"
+        isDeleting={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setInvoiceToDelete(null)}
+      />
     </div>
   );
 }

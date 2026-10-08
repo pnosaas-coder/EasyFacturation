@@ -7,6 +7,7 @@ import { Topbar } from "../../components/layout/Topbar";
 import { formatFCFA } from "../../lib/format/money";
 import { formatDate } from "../../lib/format/dates";
 import { RecurringInvoice } from "../../lib/domain/types";
+import { DeleteConfirmationModal } from "../../components/shared/DeleteConfirmationModal";
 import {
   Repeat,
   Plus,
@@ -18,6 +19,7 @@ import {
   Building2,
   CheckCircle2,
   X,
+  Trash2,
 } from "lucide-react";
 
 const initialRecurring: RecurringInvoice[] = [
@@ -60,12 +62,23 @@ export function RecurringClient() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [items, setItems] = useState<RecurringInvoice[]>(initialRecurring);
   const [modalOpen, setModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<RecurringInvoice | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // New recurring state
   const [clientName, setClientName] = useState("");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState(1_000_000);
   const [frequency, setFrequency] = useState<"monthly" | "quarterly" | "yearly">("monthly");
+
+  const handleConfirmDelete = () => {
+    if (!itemToDelete) return;
+    setIsDeleting(true);
+    setItems((prev) => prev.filter((it) => it.id !== itemToDelete.id));
+    toast.success(`Abonnement récurrent « ${itemToDelete.clientName} » supprimé.`);
+    setItemToDelete(null);
+    setIsDeleting(false);
+  };
 
   const toggleStatus = (id: string) => {
     setItems((prev) =>
@@ -189,10 +202,10 @@ export function RecurringClient() {
                   </div>
                 </div>
 
-                <div className="pt-1">
+                <div className="pt-1 flex items-center gap-2">
                   <button
                     onClick={() => toggleStatus(item.id)}
-                    className={`w-full inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-all active:scale-95 ${
+                    className={`flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-all active:scale-95 cursor-pointer ${
                       item.status === "active"
                         ? "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300"
                         : "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
@@ -210,12 +223,33 @@ export function RecurringClient() {
                       </>
                     )}
                   </button>
+
+                  <button
+                    type="button"
+                    title="Supprimer cette récurrence"
+                    onClick={() => setItemToDelete(item)}
+                    className="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50/60 p-2 text-rose-600 transition-all hover:bg-rose-100 hover:text-rose-700 active:scale-95 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400 cursor-pointer"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         </main>
       </div>
+
+      {/* Delete Confirmation Modal for Recurring Subscription */}
+      <DeleteConfirmationModal
+        isOpen={Boolean(itemToDelete)}
+        title="Supprimer cet abonnement récurrent ?"
+        description={`Êtes-vous certain de vouloir supprimer le contrat d'émission automatique pour « ${itemToDelete?.clientName} » ?`}
+        itemLabel={`${itemToDelete?.clientName} • ${itemToDelete ? formatFCFA(itemToDelete.amount) : ""}`}
+        confirmButtonText="Oui, supprimer le contrat"
+        isDeleting={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setItemToDelete(null)}
+      />
 
       {/* Modal New Recurring */}
       {modalOpen && (

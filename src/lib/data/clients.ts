@@ -60,3 +60,12 @@ export async function updateClient(id: string, input: Partial<ClientInput>): Pro
   Object.assign(client, input);
   return client;
 }
+
+export async function deleteClient(id: string): Promise<boolean> {
+  const store = getStore();
+  const index = store.clients.findIndex((c) => c.id === id);
+  if (index === -1) return false;
+
+  store.clients.splice(index, 1);
+  return true;
+}

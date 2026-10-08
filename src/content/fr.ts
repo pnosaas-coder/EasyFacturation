@@ -1,5 +1,5 @@
 export const contentFr = {
-  appName: "PNO Facture Pro",
+  appName: "EasyFacturation",
   appTagline: "Facturation & Gestion commerciale pour entrepreneurs africains",
   currencySymbol: "FCFA",
 

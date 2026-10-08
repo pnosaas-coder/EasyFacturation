@@ -8,6 +8,7 @@ import { StatCards } from "../components/dashboard/StatCards";
 import { RevenueChart } from "../components/dashboard/RevenueChart";
 import { RecentInvoicesTable } from "../components/dashboard/RecentInvoicesTable";
 import { QuickRelanceWidget } from "../components/dashboard/QuickRelanceWidget";
+import { StatusDonutChart } from "../components/dashboard/StatusDonutChart";
 import {
   DashboardKPIs,
   Invoice,
@@ -55,7 +56,7 @@ export function DashboardClient({
             <div className="space-y-1.5">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md">
                 <Sparkles className="h-3.5 w-3.5 text-blue-200" />
-                <span>PNO Facture Pro • Cameroun (Douala & Yaoundé)</span>
+                <span>EasyFacturation • Cameroun (Douala & Yaoundé)</span>
               </div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
                 Bonjour, Philippe NOUGOUE 👋
@@ -112,11 +113,12 @@ export function DashboardClient({
               aria-labelledby="invoices-heading"
               className="lg:col-span-2 space-y-4"
             >
-              <RecentInvoicesTable invoices={invoices} />
+              <RecentInvoicesTable invoices={invoices} isDashboard={true} />
             </section>
 
-            {/* Right 1 Col: Quick Relance & Top Clients widgets */}
-            <aside aria-label="Alertes et Top Clients" className="space-y-6">
+            {/* Right 1 Col: Status Donut Chart & Quick Relance */}
+            <aside aria-label="Suivi et Alertes" className="space-y-6">
+              <StatusDonutChart invoices={invoices} />
               <QuickRelanceWidget overdueInvoices={overdueInvoices} />
             </aside>
           </div>

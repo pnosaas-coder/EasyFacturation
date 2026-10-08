@@ -8,8 +8,16 @@ import { Sidebar } from "../../components/layout/Sidebar";
 import { Topbar } from "../../components/layout/Topbar";
 import { formatFCFA } from "../../lib/format/money";
 import { formatDate } from "../../lib/format/dates";
-import { Quote, Client, Product } from "../../lib/domain/types";
-import { convertQuoteToInvoiceAction, createQuoteAction } from "../../lib/actions/quotes";
+import { Quote, Client, Product, QuoteStatus } from "../../lib/domain/types";
+import {
+  convertQuoteToInvoiceAction,
+  createQuoteAction,
+  updateQuoteStatusAction,
+  deleteQuoteAction,
+} from "../../lib/actions/quotes";
+import { StatusDropdown } from "../../components/shared/StatusDropdown";
+import { DeleteConfirmationModal } from "../../components/shared/DeleteConfirmationModal";
+import { Pagination } from "../../components/shared/Pagination";
 import {
   FileCheck2,
   Plus,
@@ -21,6 +29,7 @@ import {
   MessageSquare,
   Sparkles,
   X,
+  Trash2,
 } from "lucide-react";
 
 interface QuotesListClientProps {
@@ -134,6 +143,52 @@ export function QuotesListClient({
     }
   };
 
+  // Status Dropdown change handler
+  const handleStatusChange = async (quoteId: string, newStatus: QuoteStatus) => {
+    const toastId = toast.loading("Mise à jour du statut du devis...");
+    try {
+      const res = await updateQuoteStatusAction(quoteId, newStatus);
+      if (res.success && res.data) {
+        setQuotes((prev) =>
+          prev.map((q) => (q.id === quoteId ? { ...q, status: newStatus } : q))
+        );
+        toast.success(`Statut du devis mis à jour : ${newStatus}`, { id: toastId });
+      } else {
+        toast.error(res.error || "Erreur lors de la mise à jour", { id: toastId });
+      }
+    } catch {
+      toast.error("Erreur inattendue.", { id: toastId });
+    }
+  };
+
+  // Delete quote confirmation handler
+  const [quoteToDelete, setQuoteToDelete] = useState<Quote | null>(null);
+  const [isDeletingQuote, setIsDeletingQuote] = useState(false);
+
+  const handleConfirmDeleteQuote = async () => {
+    if (!quoteToDelete) return;
+    setIsDeletingQuote(true);
+    const toastId = toast.loading("Suppression du devis en cours...");
+    try {
+      const res = await deleteQuoteAction(quoteToDelete.id);
+      if (res.success) {
+        setQuotes((prev) => prev.filter((q) => q.id !== quoteToDelete.id));
+        toast.success(`Devis ${quoteToDelete.number} supprimé avec succès.`, { id: toastId });
+        setQuoteToDelete(null);
+      } else {
+        toast.error(res.error || "Impossible de supprimer le devis.", { id: toastId });
+      }
+    } catch {
+      toast.error("Erreur lors de la suppression.", { id: toastId });
+    } finally {
+      setIsDeletingQuote(false);
+    }
+  };
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const filteredQuotes = quotes.filter((q) => {
     const matchesStatus = statusFilter === "all" || q.status === statusFilter;
     const matchesSearch =
@@ -142,6 +197,12 @@ export function QuotesListClient({
       q.clientName.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
+
+  const totalPages = Math.ceil(filteredQuotes.length / pageSize) || 1;
+  const paginatedQuotes = filteredQuotes.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <div className="flex min-h-screen bg-slate-50/70 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100">
@@ -230,75 +291,110 @@ export function QuotesListClient({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs dark:divide-slate-800">
-                {filteredQuotes.map((quote) => (
-                  <tr
-                    key={quote.id}
-                    className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/50"
-                  >
-                    <td className="py-4 pl-6 pr-3 font-mono font-bold text-blue-600">
-                      {quote.number}
-                    </td>
-                    <td className="px-3 py-4">
-                      <div className="font-bold text-slate-900 dark:text-slate-100">
-                        {quote.clientName}
-                      </div>
-                      <div className="text-[11px] text-slate-400">
-                        {quote.clientCity || "Cameroun"}
-                      </div>
-                    </td>
-                    <td className="px-3 py-4 text-slate-600 dark:text-slate-300">
-                      {formatDate(quote.issueDate)}
-                    </td>
-                    <td className="px-3 py-4 text-slate-500">
-                      {formatDate(quote.validUntil)}
-                    </td>
-                    <td className="px-3 py-4 text-right font-bold text-slate-900 dark:text-white">
-                      {formatFCFA(quote.total)}
-                    </td>
-                    <td className="px-3 py-4 text-center">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                          quote.status === "converted"
-                            ? "bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200"
-                            : quote.status === "accepted"
-                            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200"
-                            : "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200"
-                        }`}
-                      >
-                        {quote.status === "converted"
-                          ? "Converti en facture"
-                          : quote.status === "accepted"
-                          ? "Accepté"
-                          : "Envoyé"}
-                      </span>
-                    </td>
-                    <td className="py-4 pl-3 pr-6 text-right">
-                      {quote.status !== "converted" ? (
-                        <button
-                          disabled={convertingId === quote.id}
-                          onClick={() => handleConvert(quote)}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-md active:scale-95 disabled:opacity-50 dark:bg-blue-950/60 dark:text-blue-300"
-                        >
-                          <Sparkles className="h-3.5 w-3.5" />
-                          <span>Convertir en facture</span>
-                        </button>
-                      ) : (
-                        <Link
-                          href={`/factures/${quote.convertedInvoiceId || ""}`}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-purple-600 hover:underline dark:text-purple-400"
-                        >
-                          <span>Facture liée</span>
-                          <ArrowRight className="h-3 w-3" />
-                        </Link>
-                      )}
+                {paginatedQuotes.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-12 text-center text-slate-400">
+                      Aucun devis trouvé pour ces critères de recherche.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  paginatedQuotes.map((quote) => (
+                    <tr
+                      key={quote.id}
+                      className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/50 group"
+                    >
+                      <td className="py-4 pl-6 pr-3 font-mono font-bold text-blue-600">
+                        {quote.number}
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="font-bold text-slate-900 dark:text-slate-100">
+                          {quote.clientName}
+                        </div>
+                        <div className="text-[11px] text-slate-400">
+                          {quote.clientCity || "Cameroun"}
+                        </div>
+                      </td>
+                      <td className="px-3 py-4 text-slate-600 dark:text-slate-300">
+                        {formatDate(quote.issueDate)}
+                      </td>
+                      <td className="px-3 py-4 text-slate-500">
+                        {formatDate(quote.validUntil)}
+                      </td>
+                      <td className="px-3 py-4 text-right font-bold text-slate-900 dark:text-white">
+                        {formatFCFA(quote.total)}
+                      </td>
+                      {/* Interactive Status Dropdown */}
+                      <td className="px-3 py-4 text-center">
+                        <StatusDropdown
+                          type="quote"
+                          currentStatus={quote.status}
+                          onStatusChange={(newStatus) => handleStatusChange(quote.id, newStatus)}
+                        />
+                      </td>
+                      {/* Actions: Convert + Delete */}
+                      <td className="py-4 pl-3 pr-6 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {quote.status !== "converted" ? (
+                            <button
+                              disabled={convertingId === quote.id}
+                              onClick={() => handleConvert(quote)}
+                              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-md active:scale-95 disabled:opacity-50 dark:bg-blue-950/60 dark:text-blue-300 cursor-pointer"
+                            >
+                              <Sparkles className="h-3.5 w-3.5" />
+                              <span>Convertir en facture</span>
+                            </button>
+                          ) : (
+                            <Link
+                              href={`/factures/${quote.convertedInvoiceId || ""}`}
+                              className="inline-flex items-center gap-1 text-xs font-semibold text-purple-600 hover:underline dark:text-purple-400"
+                            >
+                              <span>Facture liée</span>
+                              <ArrowRight className="h-3 w-3" />
+                            </Link>
+                          )}
+
+                          {/* Delete quote action */}
+                          <button
+                            type="button"
+                            title="Supprimer ce devis"
+                            onClick={() => setQuoteToDelete(quote)}
+                            className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/50 dark:hover:text-rose-400 transition-all duration-200 hover:scale-115 active:scale-95 cursor-pointer"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
+
+            {/* Pagination Controls */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredQuotes.length}
+              pageSize={pageSize}
+              pageSizeOptions={[5, 10, 20]}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+            />
           </div>
         </main>
       </div>
+
+      {/* Delete Confirmation Modal for Quote */}
+      <DeleteConfirmationModal
+        isOpen={Boolean(quoteToDelete)}
+        title="Supprimer ce devis ?"
+        description={`Êtes-vous certain de vouloir supprimer le devis ${quoteToDelete?.number} (${quoteToDelete?.clientName}) ? Cette action est irréversible.`}
+        itemLabel={`${quoteToDelete?.number} • ${quoteToDelete ? formatFCFA(quoteToDelete.total) : ""}`}
+        confirmButtonText="Oui, supprimer le devis"
+        isDeleting={isDeletingQuote}
+        onConfirm={handleConfirmDeleteQuote}
+        onClose={() => setQuoteToDelete(null)}
+      />
 
       {/* CREATE QUOTE MODAL */}
       {modalOpen && (

@@ -177,6 +177,27 @@ export async function deleteDraftInvoice(id: string): Promise<boolean> {
   return true;
 }
 
+export async function deleteInvoice(id: string): Promise<boolean> {
+  const store = getStore();
+  const index = store.invoices.findIndex((inv) => inv.id === id);
+  if (index === -1) return false;
+
+  const invoice = store.invoices[index];
+
+  // Adjust client counters if invoice had impact
+  if (invoice.status !== "draft" && invoice.status !== "cancelled") {
+    const client = store.clients.find((c) => c.id === invoice.clientId);
+    if (client) {
+      client.totalBilled = Math.max(0, client.totalBilled - invoice.total);
+      client.balanceDue = Math.max(0, client.balanceDue - invoice.balanceDue);
+      client.totalPaid = Math.max(0, client.totalPaid - invoice.amountPaid);
+    }
+  }
+
+  store.invoices.splice(index, 1);
+  return true;
+}
+
 export async function duplicateInvoice(id: string): Promise<Invoice | null> {
   const source = await getInvoiceById(id);
   if (!source) return null;

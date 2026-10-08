@@ -6,11 +6,12 @@ import {
   createInvoice,
   updateInvoiceStatus,
   deleteDraftInvoice,
+  deleteInvoice,
   duplicateInvoice,
 } from "../../src/lib/data/invoices";
 import { recordPayment, getPaymentsByInvoiceId } from "../../src/lib/data/payments";
-import { createQuote, convertQuoteToInvoice, getQuoteById } from "../../src/lib/data/quotes";
-import { getClients, createClient } from "../../src/lib/data/clients";
+import { createQuote, convertQuoteToInvoice, getQuoteById, deleteQuote } from "../../src/lib/data/quotes";
+import { getClients, createClient, deleteClient, getClientById } from "../../src/lib/data/clients";
 import { getDashboardKPIs } from "../../src/lib/data/dashboard";
 
 describe("Store & DAL : In-Memory Data Access Layer", () => {
@@ -178,6 +179,52 @@ describe("Store & DAL : In-Memory Data Access Layer", () => {
     expect(dup?.status).toBe("draft");
     expect(dup?.number).toBe("FAC-2026-0049");
     expect(dup?.items.length).toBe(2);
+  });
+
+  it("supprime une facture et réajuste les totaux du client associé", async () => {
+    const inv = await getInvoiceById("inv_1");
+    expect(inv).not.toBeNull();
+    const clientId = inv!.clientId;
+    const clientBefore = await getClientById(clientId);
+    const balanceBefore = clientBefore?.balanceDue || 0;
+
+    const res = await deleteInvoice("inv_1");
+    expect(res).toBe(true);
+
+    const check = await getInvoiceById("inv_1");
+    expect(check).toBeNull();
+
+    const clientAfter = await getClientById(clientId);
+    expect((clientAfter?.balanceDue || 0)).toBeLessThanOrEqual(balanceBefore);
+  });
+
+  it("supprime un devis avec succès", async () => {
+    const quote = await createQuote({
+      clientId: "cli_1",
+      clientName: "MTN Cameroon",
+      issueDate: "2026-10-08",
+      validUntil: "2026-11-08",
+      status: "sent",
+      items: [{ description: "Audit", quantity: 1, unitPrice: 300_000, taxRate: 0 }],
+    });
+
+    const res = await deleteQuote(quote.id);
+    expect(res).toBe(true);
+    expect(await getQuoteById(quote.id)).toBeNull();
+  });
+
+  it("supprime un client avec succès", async () => {
+    const client = await createClient({
+      name: "Client Test Suppression",
+      city: "Douala",
+      country: "Cameroun",
+      phone: "+237 600000000",
+      email: "test@client.cm",
+    });
+
+    const res = await deleteClient(client.id);
+    expect(res).toBe(true);
+    expect(await getClientById(client.id)).toBeNull();
   });
 
   it("calcule les KPIs du tableau de bord avec précision", async () => {

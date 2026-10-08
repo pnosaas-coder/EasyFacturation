@@ -176,45 +176,8 @@ export function InvoicesListClient({ initialInvoices }: InvoicesListClientProps)
             </div>
           </div>
 
-          {/* Search & Filter Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-            <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher par numéro ou client..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-9 pr-3 py-1.5 text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              />
-            </div>
-
-            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-              {[
-                { id: "all", label: "Toutes" },
-                { id: "sent", label: "Envoyées" },
-                { id: "partial", label: "Partielles" },
-                { id: "paid", label: "Payées" },
-                { id: "overdue", label: "En retard" },
-                { id: "draft", label: "Brouillons" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setStatusFilter(tab.id)}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                    statusFilter === tab.id
-                      ? "bg-blue-600 text-white shadow-xs"
-                      : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Full Interactive Table */}
-          <RecentInvoicesTable invoices={filteredInvoices} />
+          {/* Full Interactive Table with Status Dropdown, Delete Modal & Pagination */}
+          <RecentInvoicesTable invoices={initialInvoices} isDashboard={false} />
         </main>
       </div>
     </div>

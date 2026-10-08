@@ -108,7 +108,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               </div>
               <div className="flex flex-col">
                 <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-                  PNO Facture
+                  EasyFacturation
                   <span className="rounded-md bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300 transition-colors group-hover:bg-blue-600 group-hover:text-white">
                     PRO
                   </span>

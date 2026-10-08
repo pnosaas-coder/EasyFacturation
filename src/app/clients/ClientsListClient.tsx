@@ -7,7 +7,9 @@ import { Sidebar } from "../../components/layout/Sidebar";
 import { Topbar } from "../../components/layout/Topbar";
 import { formatFCFA } from "../../lib/format/money";
 import { Client } from "../../lib/domain/types";
-import { createClientAction } from "../../lib/actions/clients";
+import { createClientAction, deleteClientAction } from "../../lib/actions/clients";
+import { DeleteConfirmationModal } from "../../components/shared/DeleteConfirmationModal";
+import { Pagination } from "../../components/shared/Pagination";
 import {
   Users,
   Plus,
@@ -19,6 +21,7 @@ import {
   ArrowUpRight,
   Sparkles,
   X,
+  Trash2,
 } from "lucide-react";
 
 interface ClientsListClientProps {
@@ -80,11 +83,45 @@ export function ClientsListClient({ initialClients }: ClientsListClientProps) {
     }
   };
 
+  // Delete client state & handler
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
+  const [isDeletingClient, setIsDeletingClient] = useState(false);
+
+  const handleConfirmDeleteClient = async () => {
+    if (!clientToDelete) return;
+    setIsDeletingClient(true);
+    const toastId = toast.loading("Suppression du client en cours...");
+    try {
+      const res = await deleteClientAction(clientToDelete.id);
+      if (res.success) {
+        setClients((prev) => prev.filter((c) => c.id !== clientToDelete.id));
+        toast.success(`Client ${clientToDelete.name} supprimé avec succès.`, { id: toastId });
+        setClientToDelete(null);
+      } else {
+        toast.error(res.error || "Impossible de supprimer le client.", { id: toastId });
+      }
+    } catch {
+      toast.error("Erreur lors de la suppression.", { id: toastId });
+    } finally {
+      setIsDeletingClient(false);
+    }
+  };
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(6);
+
   const filtered = clients.filter(
     (c) =>
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       (c.city && c.city.toLowerCase().includes(search.toLowerCase())) ||
       (c.contactName && c.contactName.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+  const paginatedClients = filtered.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
 
   return (
@@ -137,118 +174,167 @@ export function ClientsListClient({ initialClients }: ClientsListClientProps) {
           </div>
 
           {/* Clients Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filtered.map((client) => {
-              const whatsappPhone = client.phone ? client.phone.replace(/\D/g, "") : "";
-              const whatsappUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(
-                `Bonjour ${client.contactName || client.name}, un message de la part de PNO Solutions Cameroun concernant votre compte.`
-              )}`;
+          {paginatedClients.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 p-12 text-center dark:border-slate-800">
+              <Users className="mx-auto h-8 w-8 text-slate-400" />
+              <h3 className="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
+                Aucun client trouvé
+              </h3>
+              <p className="mt-1 text-xs text-slate-500">
+                Essayez d'ajuster votre recherche ou ajoutez un nouveau partenaire commercial.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {paginatedClients.map((client) => {
+                const whatsappPhone = client.phone ? client.phone.replace(/\D/g, "") : "";
+                const whatsappUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(
+                  `Bonjour ${client.contactName || client.name}, un message de la part de EasyFacturation (PNO Solutions Cameroun) concernant votre compte.`
+                )}`;
 
-              return (
-                <div
-                  key={client.id}
-                  className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-md hover:shadow-blue-500/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-sm font-bold text-white shadow-xs">
-                          {client.name.substring(0, 2).toUpperCase()}
+                return (
+                  <div
+                    key={client.id}
+                    className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-md hover:shadow-blue-500/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-sm font-bold text-white shadow-xs">
+                            {client.name.substring(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
+                              {client.name}
+                            </h3>
+                            <p className="text-[11px] text-slate-400">{client.city || "Cameroun"}</p>
+                          </div>
                         </div>
+
+                        <div className="flex items-center gap-1.5">
+                          {client.balanceDue > 0 ? (
+                            <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-950/40 dark:border-amber-900 dark:text-amber-400">
+                              Créance due
+                            </span>
+                          ) : (
+                            <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/40 dark:border-emerald-900 dark:text-emerald-400">
+                              À jour
+                            </span>
+                          )}
+
+                          {/* Delete client button */}
+                          <button
+                            type="button"
+                            title="Supprimer ce client"
+                            onClick={() => setClientToDelete(client)}
+                            className="rounded-lg p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/50 dark:hover:text-rose-400 transition-all duration-200 hover:scale-115 active:scale-95 cursor-pointer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5 pt-2 text-xs text-slate-600 dark:text-slate-400">
+                        {client.contactName && (
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-3.5 w-3.5 text-slate-400" />
+                            <span>Contact : {client.contactName}</span>
+                          </div>
+                        )}
+                        {client.email && (
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-3.5 w-3.5 text-slate-400" />
+                            <span className="truncate">{client.email}</span>
+                          </div>
+                        )}
+                        {client.phone && (
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-3.5 w-3.5 text-slate-400" />
+                            <span>{client.phone}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-5 border-t border-slate-100 pt-3 dark:border-slate-800">
+                      <div className="flex items-center justify-between text-xs mb-3">
                         <div>
-                          <h3 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
-                            {client.name}
-                          </h3>
-                          <p className="text-[11px] text-slate-400">{client.city || "Cameroun"}</p>
+                          <span className="text-[10px] uppercase font-bold text-slate-400">
+                            Facturé
+                          </span>
+                          <p className="font-bold text-slate-800 dark:text-slate-200">
+                            {formatFCFA(client.totalBilled)}
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <span className="text-[10px] uppercase font-bold text-slate-400">
+                            Reste dû
+                          </span>
+                          <p
+                            className={`font-bold ${
+                              client.balanceDue > 0
+                                ? "text-amber-600 dark:text-amber-400"
+                                : "text-emerald-600 dark:text-emerald-400"
+                            }`}
+                          >
+                            {formatFCFA(client.balanceDue)}
+                          </p>
                         </div>
                       </div>
 
-                      {client.balanceDue > 0 ? (
-                        <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-950/40 dark:border-amber-900 dark:text-amber-400">
-                          Créance due
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/40 dark:border-emerald-900 dark:text-emerald-400">
-                          À jour
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="space-y-1.5 pt-2 text-xs text-slate-600 dark:text-slate-400">
-                      {client.contactName && (
-                        <div className="flex items-center gap-2">
-                          <Building2 className="h-3.5 w-3.5 text-slate-400" />
-                          <span>Contact : {client.contactName}</span>
-                        </div>
-                      )}
-                      {client.email && (
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-3.5 w-3.5 text-slate-400" />
-                          <span className="truncate">{client.email}</span>
-                        </div>
-                      )}
-                      {client.phone && (
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-3.5 w-3.5 text-slate-400" />
-                          <span>{client.phone}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mt-5 border-t border-slate-100 pt-3 dark:border-slate-800">
-                    <div className="flex items-center justify-between text-xs mb-3">
-                      <div>
-                        <span className="text-[10px] uppercase font-bold text-slate-400">
-                          Facturé
-                        </span>
-                        <p className="font-bold text-slate-800 dark:text-slate-200">
-                          {formatFCFA(client.totalBilled)}
-                        </p>
-                      </div>
-
-                      <div className="text-right">
-                        <span className="text-[10px] uppercase font-bold text-slate-400">
-                          Reste dû
-                        </span>
-                        <p
-                          className={`font-bold ${
-                            client.balanceDue > 0
-                              ? "text-amber-600 dark:text-amber-400"
-                              : "text-emerald-600 dark:text-emerald-400"
-                          }`}
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={whatsappUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50/80 py-1.5 text-xs font-semibold text-emerald-800 transition-all hover:bg-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800 dark:text-emerald-300"
                         >
-                          {formatFCFA(client.balanceDue)}
-                        </p>
+                          <MessageSquare className="h-3.5 w-3.5" />
+                          <span>WhatsApp</span>
+                        </a>
+
+                        <Link
+                          href={`/factures/nouvelle?clientId=${client.id}`}
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white py-1.5 text-xs font-semibold text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300"
+                        >
+                          <span>Facturer</span>
+                          <ArrowUpRight className="h-3.5 w-3.5" />
+                        </Link>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={whatsappUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50/80 py-1.5 text-xs font-semibold text-emerald-800 transition-all hover:bg-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800 dark:text-emerald-300"
-                      >
-                        <MessageSquare className="h-3.5 w-3.5" />
-                        <span>WhatsApp</span>
-                      </a>
-
-                      <Link
-                        href={`/factures/nouvelle?clientId=${client.id}`}
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white py-1.5 text-xs font-semibold text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300"
-                      >
-                        <span>Facturer</span>
-                        <ArrowUpRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-xs">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filtered.length}
+              pageSize={pageSize}
+              pageSizeOptions={[6, 12, 24]}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+            />
           </div>
         </main>
       </div>
+
+      {/* Delete Confirmation Modal for Client */}
+      <DeleteConfirmationModal
+        isOpen={Boolean(clientToDelete)}
+        title="Supprimer ce client ?"
+        description={`Êtes-vous certain de vouloir supprimer le profil client « ${clientToDelete?.name} » ? Cette action est irréversible.`}
+        itemLabel={`${clientToDelete?.name} • Reste dû: ${clientToDelete ? formatFCFA(clientToDelete.balanceDue) : ""}`}
+        confirmButtonText="Oui, supprimer le client"
+        isDeleting={isDeletingClient}
+        onConfirm={handleConfirmDeleteClient}
+        onClose={() => setClientToDelete(null)}
+      />
 
       {/* CREATE CLIENT MODAL */}
       {modalOpen && (

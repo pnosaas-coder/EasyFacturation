@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { quoteInputSchema } from "../validation/quote";
-import { createQuote, updateQuoteStatus, convertQuoteToInvoice } from "../data/quotes";
+import { createQuote, updateQuoteStatus, convertQuoteToInvoice, deleteQuote } from "../data/quotes";
 import { ActionResult, Quote, QuoteStatus, Invoice } from "../domain/types";
 
 export async function createQuoteAction(input: unknown): Promise<ActionResult<Quote>> {
@@ -58,6 +58,20 @@ export async function convertQuoteToInvoiceAction(quoteId: string): Promise<Acti
     return { success: true, data: invoice };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur lors de la conversion en facture.";
+    return { success: false, error: errorMsg };
+  }
+}
+
+export async function deleteQuoteAction(id: string): Promise<ActionResult<boolean>> {
+  try {
+    const success = await deleteQuote(id);
+    if (!success) {
+      return { success: false, error: "Devis introuvable." };
+    }
+    revalidatePath("/devis");
+    return { success: true, data: true };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Erreur lors de la suppression du devis.";
     return { success: false, error: errorMsg };
   }
 }

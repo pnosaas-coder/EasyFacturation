@@ -155,3 +155,12 @@ export async function convertQuoteToInvoice(quoteId: string): Promise<Invoice> {
 
   return invoice;
 }
+
+export async function deleteQuote(id: string): Promise<boolean> {
+  const store = getStore();
+  const index = store.quotes.findIndex((q) => q.id === id);
+  if (index === -1) return false;
+
+  store.quotes.splice(index, 1);
+  return true;
+}
