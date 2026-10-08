@@ -111,6 +111,27 @@ L'application répond aux réalités locales :
 * **Synchronisation Multi-Onglets (`/factures`, `/clients`, `/rapports`) :**
   * Revalidation automatique Next.js (`revalidatePath` pour `/`, `/factures`, `/clients`, `/rapports`, `/devis`) combinée à `router.refresh()` et synchronisation des `props` via `useEffect` pour assurer des données fraîches et vivantes sur l'ensemble de l'application.
 
+### 2.11 Architecture Full-Stack Supabase (Cloud & Persistance Réelle)
+* **Intégration MCP Supabase Opérationnelle :**
+  * Connexion native via protocole stdio `@supabase/mcp-server-supabase` et Token d'Accès Personnel (PAT).
+  * Outils d'infrastructure actifs : migrations déclaratives (`apply_migration`), génération de types TypeScript synchronisée (`generate_typescript_types`), et inspections SQL en direct (`execute_sql`, `list_tables`).
+* **Schéma Relationnel Cloud (9 Tables PostgreSQL) :**
+  * `organization_settings` : Identité légale unique (Prunus Engineering SARL, gérant Philippe NOUGOUE, NIU, RCCM, téléphones MoMo/OM, RIB bancaire).
+  * `clients` : Répertoire d'entreprises camerounaises avec balances financières calculées en temps réel (`total_billed`, `total_paid`, `balance_due`).
+  * `products` : Prestations & services avec prix unitaire HT en FCFA et taux de TVA par défaut (19,25%).
+  * `quotes` & `quote_items` : Devis et articles rattachés avec statut d'acceptation et liaison vers facture convertie (`converted_invoice_id`).
+  * `invoices` & `invoice_items` : Factures officielles séquentielles (`FAC-2026-XXXX`) avec lignes d'articles, TVA DGI 19.25%, remises et calcul des soldes.
+  * `payments` : Règlements d'acomptes ou soldes (MTN MoMo, Orange Money, Virement, Espèces) avec traçabilité de date et référence.
+  * `recurring_invoices` : Modèles de facturation périodique (abonnements & infogérance).
+* **Sécurité & Intégrité des Données :**
+  * Row Level Security (**RLS**) activé sur l'intégralité des 9 tables.
+  * Contraintes d'intégrité référentielle avec suppression en cascade (`ON DELETE CASCADE`) pour les lignes de devis et factures.
+* **DAL Hybride Haute Disponibilité (Priorité Cloud + Résilience Mémoire) :**
+  * Toute requête du DAL interroge en priorité Supabase Cloud.
+  * En cas d'indisponibilité réseau ou dans l'environnement de test runner unitaire (Vitest ultra-rapide 400ms), le DAL bascule gracieusement sur le store singleton en mémoire avec synchronisation bidirectionnelle.
+* **Script de Seeding Automatisé :**
+  * `scripts/seed-supabase.mjs` permet de peupler ou réinitialiser instantanément la base Supabase avec les données canoniques de Prunus Engineering SARL.
+
 ---
 
 ## 3. Structure des Fichiers & Architecture
@@ -118,10 +139,13 @@ L'application répond aux réalités locales :
 ```
 PNO-Facture-Pro/
 ├── .agents/
+│   ├── mcp_config.json                      # Configuration MCP Supabase stdio
 │   └── rules/
 │       └── pno-facture-pro-standards.md     # Règles métier et UI obligatoires
 ├── docs/
 │   └── PLAN.md                              # Plan d'implémentation global
+├── scripts/
+│   └── seed-supabase.mjs                    # Script de peuplement canonique de la base Supabase
 ├── tests/
 │   └── unit/
 │       ├── calc.test.ts                     # Tests calculs financiers FCFA & TVA
@@ -129,7 +153,9 @@ PNO-Facture-Pro/
 │       ├── products.test.ts                 # Tests gestion catalogue produits
 │       ├── reports.test.ts                  # Tests génération rapports financiers
 │       ├── search.test.ts                   # Tests recherche palette de commande
-│       └── store-dal.test.ts                # Tests DAL en mémoire (CRUD, suppression, conversion)
+│       ├── reactivity.test.ts               # Tests dynamisme temps réel inter-modules
+│       ├── store-dal.test.ts                # Tests DAL en mémoire (CRUD, suppression, conversion)
+│       └── supabase-dal.test.ts             # Tests DAL Supabase et adapters bidirectionnels
 ├── src/
 │   ├── app/                                 # Next.js App Router (Pages & Routes)
 │   │   ├── layout.tsx                       # Layout racine (HTML, polices, ThemeProvider, Toaster)
@@ -184,15 +210,21 @@ PNO-Facture-Pro/
 │   │       ├── CommandPalette.tsx           # Fenêtre modale de recherche globale ⌘K
 │   │       └── StatusBadge.tsx              # Badge de statut coloré avec icône
 │   ├── lib/                                 # Logique métier, données et utilitaires
-│   │   ├── actions/                         # Next.js Server Actions (invoices, quotes, clients)
+│   │   ├── actions/                         # Next.js Server Actions (invoices, quotes, clients, settings)
 │   │   ├── calc/                            # Calculs financiers déterministes (TVA, remises, soldes)
-│   │   ├── data/                            # DAL (Data Access Layer) en mémoire avec singleton
+│   │   ├── supabase/                        # Architecture Supabase Full-Stack
+│   │   │   ├── database.types.ts            # Types TypeScript synchronisés avec PostgreSQL Supabase
+│   │   │   ├── client.ts                    # Clients Supabase (Server, Browser, Service Role)
+│   │   │   └── adapters.ts                  # Mappings bidirectionnels Tables Relationnelles <-> Entités
+│   │   ├── data/                            # DAL Hybride (Supabase Cloud + Fallback Mémoire)
 │   │   │   ├── store.ts                     # Store singleton en mémoire et seed complet
 │   │   │   ├── invoices.ts                  # Opérations CRUD et requêtes factures
 │   │   │   ├── quotes.ts                    # Opérations CRUD devis et conversion
 │   │   │   ├── clients.ts                   # Opérations CRUD clients
 │   │   │   ├── products.ts                  # Opérations CRUD catalogue
 │   │   │   ├── payments.ts                  # Enregistrement des paiements partiels/totaux
+│   │   │   ├── reports.ts                   # Rapports de TVA et d'encaissements
+│   │   │   ├── settings.ts                  # Configuration société Prunus Engineering
 │   │   │   └── dashboard.ts                 # Calcul des KPIs et statistiques mensuelles
 │   │   ├── domain/                          # Types TypeScript stricts
 │   │   ├── format/                          # Formatage monétaire (formatFCFA) et dates
@@ -217,13 +249,16 @@ PNO-Facture-Pro/
 | :--- | :--- | :--- |
 | **Next.js** | `16.4.0` | Framework React avec App Router, Server Actions et Turbopack. |
 | **React** | `19.3.0` | Bibliothèque UI native avec Server Components et Hooks modernes. |
+| **Supabase Database** | `PostgreSQL Cloud` | Base de données relationnelle cloud managée avec 9 tables et RLS. |
+| **@supabase/supabase-js** | `^2.49.1` | Client SDK officiel pour requêtes SQL typées et persistance cloud. |
+| **@supabase/mcp-server-supabase** | `stdio` | Serveur MCP officiel pour introspection, migrations et exécution SQL. |
 | **Tailwind CSS** | `4.3.3` | Moteur CSS moderne avec `@import "tailwindcss";` et `@custom-variant dark`. |
 | **TypeScript** | `^5.0` | Typage statique strict (zéro `any` dans le domaine métier). |
 | **Big.js** | `^7.0.1` | Arithmétique décimale sans perte pour les montants financiers FCFA et taux TVA. |
 | **Lucide React** | `^1.52.0` | Pack d'icônes vectorielles cohérentes et légères. |
 | **Sonner** | `^2.0.8` | Système de notifications toast riches et accessibles. |
 | **Zod** | `^4.6.5` | Validation déclarative des formulaires et schémas de données. |
-| **Vitest** | `^5.0.3` | Runner de tests unitaires ultra-rapide (36/36 tests automatisés). |
+| **Vitest** | `^5.0.3` | Runner de tests unitaires ultra-rapide (45/45 tests automatisés). |
 
 ---
 
@@ -271,10 +306,15 @@ Lorsque vous travaillez sur ce projet, vous devez **TOUJOURS** appliquer sans d�
 * Lors de la suppression d'une facture active (`deleteInvoice`), les compteurs du client (`totalBilled`, `totalPaid`, `balanceDue`) doivent être automatiquement recalculés de manière déterministe (`recalculateClientCounters`).
 * Les devis convertis conservent leur statut `converted` avec traçabilité vers `convertedInvoiceId`.
 
-### Règle 4 : Qualité du Code & Validation Avant Livraison
+### Règle 4 : Persistance Full-Stack Supabase & RLS
+* Toute nouvelle entité ou mutation doit passer par le DAL qui synchronise Supabase Cloud en priorité.
+* Préserver l'adaptabilité bidirectionnelle des adaptateurs (`src/lib/supabase/adapters.ts`) reliant les colonnes PostgreSQL en `snake_case` aux types de domaine TypeScript en `camelCase`.
+* Respecter la politique RLS et ne jamais exposer la `SUPABASE_SERVICE_ROLE_KEY` côté client ou dans les composants navigateur.
+
+### Règle 5 : Qualité du Code & Validation Avant Livraison
 * Toujours exécuter `npx tsc --noEmit` après vos modifications pour vérifier qu'aucune erreur de typage TypeScript n'a été introduite.
-* Toujours exécuter `npm test` pour s'assurer que l'intégralité de la suite de tests unitaires (39 tests) continue de passer au vert.
+* Toujours exécuter `npm test` pour s'assurer que l'intégralité de la suite de tests unitaires (45 tests) continue de passer au vert.
 * Respecter la convention Tailwind v4 : ne pas créer de `tailwind.config.js` obsolète.
 
 ---
-*Dernière mise à jour : Dynamisme temps réel & réactivité inter-modules validés (39 tests au vert).*
+*Dernière mise à jour : Architecture Full-Stack Supabase Cloud validée & opérationnelle (45 tests au vert).*

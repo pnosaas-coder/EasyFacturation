@@ -1,4 +1,5 @@
 import { getStore } from "./store";
+import { getInvoices } from "./invoices";
 import Big from "big.js";
 
 export interface VatMonthSummary {
@@ -26,6 +27,7 @@ export interface VatReportData {
 }
 
 export async function getVatReport(targetYear: number = 2026): Promise<VatReportData> {
+  const invoices = await getInvoices();
   const store = getStore();
 
   const months = [
@@ -57,7 +59,7 @@ export async function getVatReport(targetYear: number = 2026): Promise<VatReport
   let totalTTC = Big(0);
 
   // Filter invoices for targetYear, excluding draft and cancelled
-  for (const inv of store.invoices) {
+  for (const inv of invoices) {
     if (inv.status === "draft" || inv.status === "cancelled") continue;
 
     const date = new Date(inv.issueDate);
@@ -83,7 +85,10 @@ export async function getVatReport(targetYear: number = 2026): Promise<VatReport
   let cashOrOther = Big(0);
   let totalPayments = Big(0);
 
-  for (const p of store.payments) {
+  // Collect payments from all loaded invoices or store
+  const allPayments = store.payments;
+
+  for (const p of allPayments) {
     const pDate = new Date(p.paidOn);
     if (pDate.getFullYear() === targetYear) {
       const monthIndex = pDate.getMonth();

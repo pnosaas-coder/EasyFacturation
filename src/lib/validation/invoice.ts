@@ -25,6 +25,7 @@ export const invoiceInputSchema = z.object({
   discountValue: z.number().min(0).optional(),
   notes: z.string().optional(),
   terms: z.string().optional(),
+  quoteId: z.string().optional(),
   items: z.array(invoiceItemSchema).min(1, "Au moins une ligne d'article est requise"),
 });
 

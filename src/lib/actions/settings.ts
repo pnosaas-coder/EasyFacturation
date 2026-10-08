@@ -26,6 +26,7 @@ export async function updateSettingsAction(input: unknown): Promise<ActionResult
     revalidatePath("/parametres");
     revalidatePath("/factures/nouvelle");
     revalidatePath("/devis");
+    revalidatePath("/");
     return { success: true, data: settings };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur lors de la mise à jour des paramètres.";

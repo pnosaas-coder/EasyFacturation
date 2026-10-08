@@ -3,6 +3,8 @@ import { Quote, InvoiceItem, QuoteStatus, Invoice } from "../domain/types";
 import { QuoteInput } from "../validation/quote";
 import { calculateInvoiceTotals } from "../calc/invoice-totals";
 import { createInvoice } from "./invoices";
+import { createServerClient } from "../supabase/client";
+import { mapQuoteFromRow } from "../supabase/adapters";
 
 export interface QuoteFilters {
   status?: string;
@@ -10,6 +12,35 @@ export interface QuoteFilters {
 }
 
 export async function getQuotes(filters?: QuoteFilters): Promise<Quote[]> {
+  try {
+    const supabase = createServerClient();
+    let query = supabase
+      .from("quotes")
+      .select("*, quote_items(*)")
+      .order("issue_date", { ascending: false });
+
+    if (filters?.status && filters.status !== "all") {
+      query = query.eq("status", filters.status);
+    }
+
+    if (filters?.search && filters.search.trim().length > 0) {
+      const term = `%${filters.search.trim()}%`;
+      query = query.or(`number.ilike.${term},client_name.ilike.${term},client_email.ilike.${term}`);
+    }
+
+    const { data, error } = await query;
+    if (!error && data && data.length > 0) {
+      const mapped = data.map((row) =>
+        mapQuoteFromRow(row, (row as unknown as { quote_items: unknown[] }).quote_items as never)
+      );
+      const store = getStore();
+      store.quotes = mapped;
+      return mapped;
+    }
+  } catch {
+    // Fallback
+  }
+
   const store = getStore();
   let list = [...store.quotes];
 
@@ -31,6 +62,21 @@ export async function getQuotes(filters?: QuoteFilters): Promise<Quote[]> {
 }
 
 export async function getQuoteById(id: string): Promise<Quote | null> {
+  try {
+    const supabase = createServerClient();
+    const { data, error } = await supabase
+      .from("quotes")
+      .select("*, quote_items(*)")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (!error && data) {
+      return mapQuoteFromRow(data, (data as unknown as { quote_items: unknown[] }).quote_items as never);
+    }
+  } catch {
+    // Fallback
+  }
+
   const store = getStore();
   const quote = store.quotes.find((q) => q.id === id);
   return quote || null;
@@ -60,6 +106,7 @@ export async function createQuote(input: QuoteInput): Promise<Quote> {
     0
   );
 
+  const quoteId = `dev_${Date.now()}`;
   const items: InvoiceItem[] = input.items.map((it, idx) => ({
     id: it.id || `dvi_${Date.now()}_${idx}`,
     description: it.description,
@@ -73,7 +120,7 @@ export async function createQuote(input: QuoteInput): Promise<Quote> {
 
   const now = new Date().toISOString();
   const newQuote: Quote = {
-    id: `dev_${Date.now()}`,
+    id: quoteId,
     number: quoteNumber,
     clientId: input.clientId,
     clientName: input.clientName,
@@ -97,6 +144,52 @@ export async function createQuote(input: QuoteInput): Promise<Quote> {
     updatedAt: now,
   };
 
+  try {
+    const supabase = createServerClient();
+    await supabase.from("quotes").insert({
+      id: newQuote.id,
+      number: newQuote.number,
+      client_id: newQuote.clientId,
+      client_name: newQuote.clientName,
+      client_email: newQuote.clientEmail || null,
+      client_phone: newQuote.clientPhone || null,
+      client_city: newQuote.clientCity || null,
+      client_address: newQuote.clientAddress || null,
+      issue_date: newQuote.issueDate,
+      valid_until: newQuote.validUntil,
+      status: newQuote.status,
+      subtotal: newQuote.subtotal,
+      discount_type: newQuote.discountType || null,
+      discount_value: newQuote.discountValue || null,
+      discount_amount: newQuote.discountAmount,
+      tax_total: newQuote.taxTotal,
+      total: newQuote.total,
+      notes: newQuote.notes || null,
+      terms: newQuote.terms || null,
+      created_at: newQuote.createdAt,
+      updated_at: newQuote.updatedAt,
+    });
+
+    if (items.length > 0) {
+      await supabase.from("quote_items").insert(
+        items.map((it, idx) => ({
+          id: it.id,
+          quote_id: newQuote.id,
+          product_id: it.productId || null,
+          description: it.description,
+          quantity: it.quantity,
+          unit_price: it.unitPrice,
+          tax_rate: it.taxRate,
+          line_subtotal: it.lineSubtotal,
+          line_tax: it.lineTax,
+          position: idx,
+        }))
+      );
+    }
+  } catch {
+    // Fallback
+  }
+
   store.quotes.unshift(newQuote);
   return newQuote;
 }
@@ -108,20 +201,39 @@ export async function updateQuoteStatus(id: string, status: QuoteStatus): Promis
 
   quote.status = status;
   quote.updatedAt = new Date().toISOString();
+
+  try {
+    const supabase = createServerClient();
+    await supabase.from("quotes").update({ status, updated_at: quote.updatedAt }).eq("id", id);
+  } catch {
+    // Fallback
+  }
+
   return quote;
 }
 
-export async function convertQuoteToInvoice(quoteId: string): Promise<Invoice> {
-  const store = getStore();
-  const quote = store.quotes.find((q) => q.id === quoteId);
-  if (!quote) {
-    throw new Error(`Devis introuvable avec l'identifiant ${quoteId}`);
+export async function deleteQuote(id: string): Promise<boolean> {
+  try {
+    const supabase = createServerClient();
+    await supabase.from("quotes").delete().eq("id", id);
+  } catch {
+    // Fallback
   }
 
+  const store = getStore();
+  const index = store.quotes.findIndex((q) => q.id === id);
+  if (index === -1) return false;
+
+  store.quotes.splice(index, 1);
+  return true;
+}
+
+export async function convertQuoteToInvoice(quoteId: string): Promise<Invoice | null> {
+  const quote = await getQuoteById(quoteId);
+  if (!quote) return null;
+
   const today = new Date().toISOString().split("T")[0];
-  const due = new Date();
-  due.setDate(due.getDate() + 30);
-  const dueDateStr = due.toISOString().split("T")[0];
+  const dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
   const invoice = await createInvoice({
     clientId: quote.clientId,
@@ -131,11 +243,11 @@ export async function convertQuoteToInvoice(quoteId: string): Promise<Invoice> {
     clientCity: quote.clientCity,
     clientAddress: quote.clientAddress,
     issueDate: today,
-    dueDate: dueDateStr,
-    status: "sent",
+    dueDate,
+    status: "draft",
     discountType: quote.discountType,
     discountValue: quote.discountValue,
-    notes: `Facture issue de la conversion du devis ${quote.number}. ${quote.notes || ""}`.trim(),
+    notes: quote.notes ? `${quote.notes}\n(Converti depuis le devis ${quote.number})` : `Converti depuis le devis ${quote.number}`,
     terms: quote.terms,
     items: quote.items.map((it) => ({
       description: it.description,
@@ -144,23 +256,23 @@ export async function convertQuoteToInvoice(quoteId: string): Promise<Invoice> {
       taxRate: it.taxRate,
       productId: it.productId,
     })),
+    quoteId: quote.id,
   });
 
-  // Link invoice back to quote and update status
   quote.status = "converted";
   quote.convertedInvoiceId = invoice.id;
   quote.updatedAt = new Date().toISOString();
 
-  invoice.quoteId = quote.id;
+  try {
+    const supabase = createServerClient();
+    await supabase.from("quotes").update({
+      status: "converted",
+      converted_invoice_id: invoice.id,
+      updated_at: quote.updatedAt,
+    }).eq("id", quoteId);
+  } catch {
+    // Fallback
+  }
 
   return invoice;
-}
-
-export async function deleteQuote(id: string): Promise<boolean> {
-  const store = getStore();
-  const index = store.quotes.findIndex((q) => q.id === id);
-  if (index === -1) return false;
-
-  store.quotes.splice(index, 1);
-  return true;
 }

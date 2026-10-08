@@ -142,13 +142,14 @@ describe("Store & DAL : In-Memory Data Access Layer", () => {
     });
 
     const invoice = await convertQuoteToInvoice(quote.id);
-    expect(invoice.id).toBeDefined();
-    expect(invoice.quoteId).toBe(quote.id);
-    expect(invoice.total).toBe(954_000); // 800k + 19.25% TVA
+    expect(invoice).not.toBeNull();
+    expect(invoice!.id).toBeDefined();
+    expect(invoice!.quoteId).toBe(quote.id);
+    expect(invoice!.total).toBe(954_000); // 800k + 19.25% TVA
 
     const refreshedQuote = await getQuoteById(quote.id);
     expect(refreshedQuote?.status).toBe("converted");
-    expect(refreshedQuote?.convertedInvoiceId).toBe(invoice.id);
+    expect(refreshedQuote?.convertedInvoiceId).toBe(invoice!.id);
   });
 
   it("permet de supprimer un brouillon mais interdit de supprimer une facture émise", async () => {

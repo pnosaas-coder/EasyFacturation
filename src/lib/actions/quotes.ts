@@ -51,6 +51,9 @@ export async function updateQuoteStatusAction(
 export async function convertQuoteToInvoiceAction(quoteId: string): Promise<ActionResult<Invoice>> {
   try {
     const invoice = await convertQuoteToInvoice(quoteId);
+    if (!invoice) {
+      return { success: false, error: "Devis introuvable ou échec de conversion." };
+    }
     revalidatePath("/devis");
     revalidatePath("/factures");
     revalidatePath("/");
