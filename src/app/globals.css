@@ -14,7 +14,8 @@
     --primary-foreground: #ffffff;
   }
 
-  .dark {
+  .dark,
+  [data-theme="dark"] {
     --background: #090d16;
     --foreground: #f8fafc;
     --card: #0f172a;

@@ -178,9 +178,9 @@ export function StatusDonutChart({ invoices }: StatusDonutChartProps) {
         </span>
       </div>
 
-      {/* Donut graphic + Center stats */}
-      <div className="py-4 flex flex-col sm:flex-row items-center justify-center gap-6">
-        <div className="relative flex items-center justify-center">
+      {/* Centered Donut graphic + Dynamic Center stats */}
+      <div className="py-3 flex flex-col items-center justify-center">
+        <div className="relative flex items-center justify-center my-1">
           <svg
             width={size}
             height={size}
@@ -228,10 +228,10 @@ export function StatusDonutChart({ invoices }: StatusDonutChartProps) {
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                   {activeSlice.label}
                 </span>
-                <span className="text-sm font-black text-slate-900 dark:text-white block mt-0.5">
+                <span className="text-base font-black text-slate-900 dark:text-white block mt-0.5">
                   {activeSlice.percentage}%
                 </span>
-                <span className="text-[10px] font-semibold text-slate-500 block truncate max-w-[90px]">
+                <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 block truncate max-w-[100px]">
                   {formatFCFA(activeSlice.total)}
                 </span>
               </div>
@@ -244,15 +244,15 @@ export function StatusDonutChart({ invoices }: StatusDonutChartProps) {
                   {formatFCFA(grandTotalAmount)}
                 </span>
                 <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 block">
-                  {totalInvoicesCount} docs
+                  {totalInvoicesCount} factures
                 </span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Dynamic Interactive Legend */}
-        <div className="flex-1 w-full space-y-1.5 max-w-xs">
+        {/* Dynamic Interactive Legend in 2-Column Grid */}
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2 pt-3">
           {sliceArcs.map((slice) => {
             const isHovered = hoveredStatus === slice.status;
             const Icon = slice.icon;
@@ -262,13 +262,13 @@ export function StatusDonutChart({ invoices }: StatusDonutChartProps) {
                 onMouseEnter={() => setHoveredStatus(slice.status)}
                 onMouseLeave={() => setHoveredStatus(null)}
                 className={cn(
-                  "group flex items-center justify-between p-1.5 rounded-xl text-xs transition-all duration-200 cursor-pointer border",
+                  "group flex items-center justify-between p-2 rounded-xl text-xs transition-all duration-200 cursor-pointer border",
                   isHovered
                     ? slice.bgColor + " shadow-xs -translate-y-0.5"
-                    : "border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                    : "border-slate-100 bg-slate-50/60 dark:border-slate-800/80 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80"
                 )}
               >
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex items-center gap-1.5 min-w-0">
                   <span
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: slice.color }}
@@ -277,20 +277,20 @@ export function StatusDonutChart({ invoices }: StatusDonutChartProps) {
                   <span className="font-semibold text-slate-700 dark:text-slate-300 truncate">
                     {slice.label}
                   </span>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[10px] text-slate-400">
                     ({slice.count})
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="font-bold text-slate-900 dark:text-white text-xs">
+                <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                  <span className="font-bold text-slate-900 dark:text-white text-[11px]">
                     {formatFCFA(slice.total)}
                   </span>
                   <span
                     className={cn(
-                      "text-[10px] font-bold px-1.5 py-0.2 rounded-md",
+                      "text-[9px] font-bold px-1.5 py-0.2 rounded-md",
                       slice.textColor,
-                      "bg-white/80 dark:bg-slate-800"
+                      "bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60"
                     )}
                   >
                     {slice.percentage}%

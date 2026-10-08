@@ -73,7 +73,7 @@ export function QuickRelanceWidget({ overdueInvoices }: QuickRelanceWidgetProps)
               <div className="mt-2.5 flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
                 <a
                   href={`https://wa.me/?text=${encodeURIComponent(
-                    `Bonjour, relance amicale de PNO Solutions pour la facture ${inv.number} de ${formatFCFA(
+                    `Bonjour, relance amicale de Prunus Engineering SARL pour la facture ${inv.number} de ${formatFCFA(
                       inv.balanceDue
                     )} échue le ${formatDate(inv.dueDate)}.`
                   )}`}

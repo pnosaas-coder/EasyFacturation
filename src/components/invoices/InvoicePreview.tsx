@@ -41,8 +41,8 @@ export interface InvoicePreviewProps {
 
 export function InvoicePreview({
   invoiceNumber,
-  sellerName = "PNO Solutions Cameroun S.A.R.L",
-  sellerEmail = "contact@pno-cameroun.cm",
+  sellerName = "Prunus Engineering SARL",
+  sellerEmail = "contact@prunus-engineering.cm",
   sellerPhone = "+237 677481161 / +237 691114908",
   sellerAddress = "Boulevard de la Liberté, Akwa, Douala, Cameroun",
   sellerTaxId = "NIU M052112345678A",
@@ -294,7 +294,7 @@ export function InvoicePreview({
         {/* Signature & Cachet : Philippe NOUGOUE */}
         <div className="flex flex-col items-end justify-between">
           <span className="font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px]">
-            Pour PNO Solutions Cameroun :
+            Pour Prunus Engineering SARL :
           </span>
           <div className="mt-3 font-serif italic text-base font-bold text-slate-900 dark:text-slate-100">
             Philippe NOUGOUE

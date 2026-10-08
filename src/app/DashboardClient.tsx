@@ -62,7 +62,7 @@ export function DashboardClient({
                 Bonjour, Philippe NOUGOUE 👋
               </h1>
               <p className="text-xs sm:text-sm text-blue-100 max-w-xl">
-                Voici le bilan de votre facturation PNO Solutions pour ce mois. Vous avez{" "}
+                Voici le bilan de votre facturation Prunus Engineering pour ce mois. Vous avez{" "}
                 <span className="font-bold underline decoration-blue-300">
                   {kpis.overdueCount} {kpis.overdueCount > 1 ? "factures à relancer" : "facture à relancer"}
                 </span>{" "}
@@ -98,27 +98,43 @@ export function DashboardClient({
             <StatCards kpis={kpis} />
           </section>
 
-          {/* Flux de facturation & Trésorerie (Graphique comparatif 6 mois) */}
-          <section aria-labelledby="chart-heading">
-            <h2 id="chart-heading" className="sr-only">
-              Graphique des flux de trésorerie
-            </h2>
-            <RevenueChart data={monthlyRevenue} />
-          </section>
+          {/* Ligne 1 Graphiques & Analyses : Flux de trésorerie (gauche) & Répartition par statut (droite) */}
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+            {/* Flux de facturation & encaissements (7/12) */}
+            <section
+              aria-labelledby="chart-heading"
+              className="xl:col-span-7 flex flex-col"
+            >
+              <h2 id="chart-heading" className="sr-only">
+                Graphique des flux de trésorerie
+              </h2>
+              <RevenueChart data={monthlyRevenue} />
+            </section>
 
-          {/* Two-column layout: Recent Invoices Table (70%) + Quick Relance & Top Clients (30%) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left 2 Cols: Invoices Table */}
+            {/* Répartition par statut avec anneau recentré (5/12) */}
+            <section
+              aria-labelledby="status-donut-heading"
+              className="xl:col-span-5 flex flex-col"
+            >
+              <h2 id="status-donut-heading" className="sr-only">
+                Répartition des factures par statut
+              </h2>
+              <StatusDonutChart invoices={invoices} />
+            </section>
+          </div>
+
+          {/* Ligne 2 : Table des factures récentes (8/12) & Relances WhatsApp (4/12) */}
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+            {/* Table des factures récentes */}
             <section
               aria-labelledby="invoices-heading"
-              className="lg:col-span-2 space-y-4"
+              className="xl:col-span-8 space-y-4"
             >
               <RecentInvoicesTable invoices={invoices} isDashboard={true} />
             </section>
 
-            {/* Right 1 Col: Status Donut Chart & Quick Relance */}
-            <aside aria-label="Suivi et Alertes" className="space-y-6">
-              <StatusDonutChart invoices={invoices} />
+            {/* Relances rapides & alertes */}
+            <aside aria-label="Suivi et Alertes" className="xl:col-span-4 space-y-6">
               <QuickRelanceWidget overdueInvoices={overdueInvoices} />
             </aside>
           </div>

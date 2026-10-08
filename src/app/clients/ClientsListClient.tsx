@@ -189,7 +189,7 @@ export function ClientsListClient({ initialClients }: ClientsListClientProps) {
               {paginatedClients.map((client) => {
                 const whatsappPhone = client.phone ? client.phone.replace(/\D/g, "") : "";
                 const whatsappUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(
-                  `Bonjour ${client.contactName || client.name}, un message de la part de EasyFacturation (PNO Solutions Cameroun) concernant votre compte.`
+                  `Bonjour ${client.contactName || client.name}, un message de la part de EasyFacturation (Prunus Engineering SARL) concernant votre compte.`
                 )}`;
 
                 return (

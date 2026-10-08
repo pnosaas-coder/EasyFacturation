@@ -265,12 +265,12 @@ export function HelpClient() {
 
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                    PNO Solutions Cameroun
+                    Prunus Engineering SARL
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     Boulevard de la Liberté, Akwa, Douala<br />
                     Permanence Bastos, Yaoundé<br />
-                    Email : <strong>contact@pno-cameroun.cm</strong>
+                    Email : <strong>contact@prunus-engineering.cm</strong>
                   </p>
                 </div>
 
@@ -447,7 +447,7 @@ export function HelpClient() {
                   </button>
 
                   <p className="text-[11px] text-center text-slate-400">
-                    Réponse directe assurée par l'équipe PNO Solutions Cameroun.
+                    Réponse directe assurée par l'équipe Prunus Engineering SARL.
                   </p>
                 </form>
               </div>

@@ -7,7 +7,7 @@ Ce document fixe les conventions strictes et obligatoires à appliquer sur toute
 ## 1. Contexte Territorial & Entreprise (Cameroun - CEMAC)
 
 - **Pays d'ancrage :** Cameroun (zone CEMAC).
-- **Raison sociale :** PNO Solutions Cameroun S.A.R.L.
+- **Raison sociale :** Prunus Engineering SARL.
 - **Gérant & Fondateur :** Philippe NOUGOUE (initiales `PN`).
 - **Contacts officiels :**
   - **Tel MTN (Mobile Money) :** `+237 677481161`

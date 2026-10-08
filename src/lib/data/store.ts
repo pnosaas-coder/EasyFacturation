@@ -764,9 +764,9 @@ const initialPayments: Payment[] = [
 
 // Initial settings seed - Cameroun
 const initialSettings: OrganizationSettings = {
-  name: "PNO Solutions Cameroun S.A.R.L",
+  name: "Prunus Engineering SARL",
   managerName: "Philippe NOUGOUE",
-  email: "contact@pno-cameroun.cm",
+  email: "contact@prunus-engineering.cm",
   phone: "+237 677481161 / +237 691114908",
   address: "Boulevard de la Liberté, Akwa",
   city: "Douala",

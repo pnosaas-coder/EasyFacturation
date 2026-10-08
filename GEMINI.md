@@ -2,7 +2,7 @@
 
 Veuillez respecter impérativement les règles définies dans [.agents/rules/pno-facture-pro-standards.md](file:///.agents/rules/pno-facture-pro-standards.md) :
 
-1. **Localisation :** Cameroun (Douala / Yaoundé, zone CEMAC).
+1. **Localisation & Société :** Cameroun (Douala / Yaoundé, zone CEMAC). Raison sociale : **Prunus Engineering SARL**.
 2. **Gérant & Fondateur :** Philippe NOUGOUE.
 3. **Contacts officiels :** Tel MTN : +237 677481161 | Tel Orange : +237 691114908.
 4. **Monnaie & TVA :** FCFA (XAF) et TVA camerounaise à 19,25% par défaut.

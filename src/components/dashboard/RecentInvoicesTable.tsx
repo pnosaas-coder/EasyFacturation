@@ -112,7 +112,7 @@ export function RecentInvoicesTable({
 
   const getWhatsAppLink = (inv: Invoice) => {
     const text = encodeURIComponent(
-      `Bonjour ${inv.clientName},\nVoici votre facture ${inv.number} émise via EasyFacturation (PNO Solutions Cameroun) d'un montant de ${formatFCFA(
+      `Bonjour ${inv.clientName},\nVoici votre facture ${inv.number} émise via EasyFacturation (Prunus Engineering SARL) d'un montant de ${formatFCFA(
         inv.total
       )}.\nÉchéance : ${formatDate(inv.dueDate)}.\nMerci de procéder au règlement (MTN MoMo: *126#, Orange Money: *150# ou Virement).`
     );
