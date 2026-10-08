@@ -2,14 +2,10 @@ import { getStore } from "./store";
 import { DashboardKPIs, Invoice, MonthlyRevenue } from "../domain/types";
 import { getInvoices } from "./invoices";
 
-export async function getDashboardKPIs(): Promise<DashboardKPIs> {
-  const store = getStore();
-  const invoices = await getInvoices();
-
+export function computeDashboardKPIs(invoices: Invoice[]): DashboardKPIs {
   const activeInvoices = invoices.filter((i) => i.status !== "draft" && i.status !== "cancelled");
   const totalInvoiced = activeInvoices.reduce((acc, i) => acc + i.total, 0);
-
-  const totalCollected = store.payments.reduce((acc, p) => acc + p.amount, 0);
+  const totalCollected = activeInvoices.reduce((acc, i) => acc + i.amountPaid, 0);
 
   const pendingInvoices = invoices.filter(
     (i) => i.status === "sent" || i.status === "partial" || i.status === "overdue"
@@ -36,8 +32,12 @@ export async function getDashboardKPIs(): Promise<DashboardKPIs> {
   };
 }
 
-export async function getDashboardMonthlyRevenue(): Promise<MonthlyRevenue[]> {
-  const store = getStore();
+export async function getDashboardKPIs(): Promise<DashboardKPIs> {
+  const invoices = await getInvoices();
+  return computeDashboardKPIs(invoices);
+}
+
+export function computeMonthlyRevenue(invoices: Invoice[]): MonthlyRevenue[] {
   const months = ["Mai", "Juin", "Juil", "Août", "Sept", "Oct"];
   const revenueByMonth: Record<string, { invoiced: number; collected: number }> = {
     Mai: { invoiced: 9_200_000, collected: 8_100_000 },
@@ -48,12 +48,13 @@ export async function getDashboardMonthlyRevenue(): Promise<MonthlyRevenue[]> {
     Oct: { invoiced: 0, collected: 0 },
   };
 
-  // Dynamically calculate current month (Oct) based on active store invoices and payments
-  const currentInvoiced = store.invoices
+  const currentInvoiced = invoices
     .filter((inv) => inv.status !== "draft" && inv.status !== "cancelled")
     .reduce((acc, inv) => acc + inv.total, 0);
 
-  const currentCollected = store.payments.reduce((acc, p) => acc + p.amount, 0);
+  const currentCollected = invoices
+    .filter((inv) => inv.status !== "draft" && inv.status !== "cancelled")
+    .reduce((acc, inv) => acc + inv.amountPaid, 0);
 
   revenueByMonth["Oct"] = {
     invoiced: currentInvoiced,
@@ -65,6 +66,11 @@ export async function getDashboardMonthlyRevenue(): Promise<MonthlyRevenue[]> {
     invoiced: revenueByMonth[month]?.invoiced ?? 0,
     collected: revenueByMonth[month]?.collected ?? 0,
   }));
+}
+
+export async function getDashboardMonthlyRevenue(): Promise<MonthlyRevenue[]> {
+  const invoices = await getInvoices();
+  return computeMonthlyRevenue(invoices);
 }
 
 export async function getRecentInvoices(limit = 5): Promise<Invoice[]> {

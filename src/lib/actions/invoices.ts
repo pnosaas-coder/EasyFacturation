@@ -32,6 +32,7 @@ export async function createInvoiceAction(input: unknown): Promise<ActionResult<
     revalidatePath("/");
     revalidatePath("/factures");
     revalidatePath("/clients");
+    revalidatePath("/rapports");
     return { success: true, data: newInvoice };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Une erreur inattendue est survenue.";
@@ -52,6 +53,7 @@ export async function updateInvoiceStatusAction(
     revalidatePath("/factures");
     revalidatePath(`/factures/${id}`);
     revalidatePath("/clients");
+    revalidatePath("/rapports");
     return { success: true, data: updated };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur lors du changement de statut.";
@@ -64,6 +66,8 @@ export async function deleteDraftInvoiceAction(id: string): Promise<ActionResult
     const deleted = await deleteDraftInvoice(id);
     revalidatePath("/");
     revalidatePath("/factures");
+    revalidatePath("/clients");
+    revalidatePath("/rapports");
     return { success: true, data: deleted };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur lors de la suppression.";
@@ -80,6 +84,7 @@ export async function deleteInvoiceAction(id: string): Promise<ActionResult<bool
     revalidatePath("/");
     revalidatePath("/factures");
     revalidatePath("/clients");
+    revalidatePath("/rapports");
     return { success: true, data: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur lors de la suppression de la facture.";

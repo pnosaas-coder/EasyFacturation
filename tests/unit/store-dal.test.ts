@@ -233,4 +233,73 @@ describe("Store & DAL : In-Memory Data Access Layer", () => {
     expect(kpis.totalCollected).toBeGreaterThan(0);
     expect(kpis.totalPending).toBeGreaterThan(0);
   });
+
+  it("met à jour dynamiquement une facture de Envoyée à Payée : règlement, solde client et KPIs", async () => {
+    // Crée une facture (FAC-2026-0049) pour le client cli_1
+    const inv = await createInvoice({
+      clientId: "cli_1",
+      clientName: "MTN Cameroon B2B",
+      issueDate: "2026-10-08",
+      dueDate: "2026-11-08",
+      status: "sent",
+      items: [
+        {
+          description: "Audit SI",
+          quantity: 1,
+          unitPrice: 2_000_000,
+          taxRate: 0,
+        },
+      ],
+    });
+
+    expect(inv.number).toBe("FAC-2026-0049");
+    expect(inv.status).toBe("sent");
+    expect(inv.amountPaid).toBe(0);
+    expect(inv.balanceDue).toBe(2_000_000);
+
+    const clientBefore = await getClientById("cli_1");
+    const clientPaidBefore = clientBefore?.totalPaid || 0;
+    const clientDueBefore = clientBefore?.balanceDue || 0;
+
+    const kpisBefore = await getDashboardKPIs();
+    const collectedBefore = kpisBefore.totalCollected;
+    const pendingBefore = kpisBefore.totalPending;
+
+    // 1. Passage du statut de "sent" à "paid"
+    const updated = await updateInvoiceStatus(inv.id, "paid");
+    expect(updated).not.toBeNull();
+    expect(updated?.status).toBe("paid");
+    expect(updated?.amountPaid).toBe(2_000_000);
+    expect(updated?.balanceDue).toBe(0);
+
+    // Vérifie qu'un paiement automatique a été créé
+    const payments = await getPaymentsByInvoiceId(inv.id);
+    expect(payments.length).toBeGreaterThan(0);
+    expect(payments[0].amount).toBe(2_000_000);
+
+    // Vérifie le solde client actualisé
+    const clientAfter = await getClientById("cli_1");
+    expect(clientAfter?.totalPaid).toBe(clientPaidBefore + 2_000_000);
+    expect(clientAfter?.balanceDue).toBe(clientDueBefore - 2_000_000);
+
+    // Vérifie les KPIs du tableau de bord
+    const kpisAfter = await getDashboardKPIs();
+    expect(kpisAfter.totalCollected).toBe(collectedBefore + 2_000_000);
+    expect(kpisAfter.totalPending).toBe(pendingBefore - 2_000_000);
+
+    // 2. Passage du statut de "paid" à nouveau vers "sent" (annulation du règlement)
+    const reverted = await updateInvoiceStatus(inv.id, "sent");
+    expect(reverted?.status).toBe("sent");
+    expect(reverted?.amountPaid).toBe(0);
+    expect(reverted?.balanceDue).toBe(2_000_000);
+
+    const clientReverted = await getClientById("cli_1");
+    expect(clientReverted?.totalPaid).toBe(clientPaidBefore);
+    expect(clientReverted?.balanceDue).toBe(clientDueBefore);
+
+    const kpisReverted = await getDashboardKPIs();
+    expect(kpisReverted.totalCollected).toBe(collectedBefore);
+    expect(kpisReverted.totalPending).toBe(pendingBefore);
+  });
 });
+

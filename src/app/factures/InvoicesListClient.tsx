@@ -24,18 +24,33 @@ interface InvoicesListClientProps {
 
 export function InvoicesListClient({ initialInvoices }: InvoicesListClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const totalInvoiced = initialInvoices
+  React.useEffect(() => {
+    setInvoices(initialInvoices);
+  }, [initialInvoices]);
+
+  const handleInvoiceUpdated = (updated: Invoice) => {
+    setInvoices((prev) =>
+      prev.map((inv) => (inv.id === updated.id ? updated : inv))
+    );
+  };
+
+  const handleInvoiceDeleted = (deletedId: string) => {
+    setInvoices((prev) => prev.filter((inv) => inv.id !== deletedId));
+  };
+
+  const totalInvoiced = invoices
     .filter((inv) => inv.status !== "draft" && inv.status !== "cancelled")
     .reduce((acc, inv) => acc + inv.total, 0);
 
-  const totalPaid = initialInvoices.reduce((acc, inv) => acc + inv.amountPaid, 0);
-  const totalDue = initialInvoices.reduce((acc, inv) => acc + inv.balanceDue, 0);
+  const totalPaid = invoices.reduce((acc, inv) => acc + inv.amountPaid, 0);
+  const totalDue = invoices.reduce((acc, inv) => acc + inv.balanceDue, 0);
 
   // Filter invoices locally based on search and status
-  const filteredInvoices = initialInvoices.filter((inv) => {
+  const filteredInvoices = invoices.filter((inv) => {
     const matchesStatus = statusFilter === "all" || inv.status === statusFilter;
     const matchesSearch =
       searchQuery.trim() === "" ||
@@ -177,7 +192,12 @@ export function InvoicesListClient({ initialInvoices }: InvoicesListClientProps)
           </div>
 
           {/* Full Interactive Table with Status Dropdown, Delete Modal & Pagination */}
-          <RecentInvoicesTable invoices={initialInvoices} isDashboard={false} />
+          <RecentInvoicesTable
+            invoices={invoices}
+            isDashboard={false}
+            onInvoiceUpdated={handleInvoiceUpdated}
+            onInvoiceDeleted={handleInvoiceDeleted}
+          />
         </main>
       </div>
     </div>

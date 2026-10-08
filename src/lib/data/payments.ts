@@ -1,6 +1,7 @@
 import { getStore } from "./store";
 import { Payment } from "../domain/types";
 import { PaymentInput } from "../validation/payment";
+import { recalculateClientCounters } from "./clients";
 
 export async function getPaymentsByInvoiceId(invoiceId: string): Promise<Payment[]> {
   const store = getStore();
@@ -54,12 +55,10 @@ export async function recordPayment(input: PaymentInput): Promise<{ payment: Pay
     invoice.status = "partial";
   }
 
-  // Update client aggregates
-  const client = store.clients.find((c) => c.id === invoice.clientId);
-  if (client) {
-    client.totalPaid += input.amount;
-    client.balanceDue = Math.max(0, client.balanceDue - input.amount);
-  }
+  invoice.payments = store.payments.filter((p) => p.invoiceId === invoice.id);
+
+  // Synchronize client aggregates
+  recalculateClientCounters(invoice.clientId);
 
   return { payment: newPayment, invoiceRemaining: invoice.balanceDue };
 }

@@ -69,3 +69,18 @@ export async function deleteClient(id: string): Promise<boolean> {
   store.clients.splice(index, 1);
   return true;
 }
+
+export function recalculateClientCounters(clientId: string): void {
+  const store = getStore();
+  const client = store.clients.find((c) => c.id === clientId);
+  if (!client) return;
+
+  const activeInvoices = store.invoices.filter(
+    (inv) => inv.clientId === clientId && inv.status !== "draft" && inv.status !== "cancelled"
+  );
+
+  client.totalBilled = activeInvoices.reduce((sum, inv) => sum + inv.total, 0);
+  client.totalPaid = activeInvoices.reduce((sum, inv) => sum + inv.amountPaid, 0);
+  client.balanceDue = activeInvoices.reduce((sum, inv) => sum + inv.balanceDue, 0);
+}
+

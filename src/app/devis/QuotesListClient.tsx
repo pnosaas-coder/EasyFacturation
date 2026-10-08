@@ -82,6 +82,7 @@ export function QuotesListClient({
               : q
           )
         );
+        router.refresh();
       } else {
         toast.error(res.error || "Erreur lors de la conversion.", { id: toastId });
       }
@@ -152,6 +153,7 @@ export function QuotesListClient({
         setQuotes((prev) =>
           prev.map((q) => (q.id === quoteId ? { ...q, status: newStatus } : q))
         );
+        router.refresh();
         toast.success(`Statut du devis mis à jour : ${newStatus}`, { id: toastId });
       } else {
         toast.error(res.error || "Erreur lors de la mise à jour", { id: toastId });
@@ -173,6 +175,7 @@ export function QuotesListClient({
       const res = await deleteQuoteAction(quoteToDelete.id);
       if (res.success) {
         setQuotes((prev) => prev.filter((q) => q.id !== quoteToDelete.id));
+        router.refresh();
         toast.success(`Devis ${quoteToDelete.number} supprimé avec succès.`, { id: toastId });
         setQuoteToDelete(null);
       } else {

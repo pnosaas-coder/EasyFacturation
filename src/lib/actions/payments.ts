@@ -29,6 +29,7 @@ export async function recordPaymentAction(
     revalidatePath("/factures");
     revalidatePath(`/factures/${parsed.data.invoiceId}`);
     revalidatePath("/clients");
+    revalidatePath("/rapports");
     return { success: true, data: result };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur lors de l'enregistrement du règlement.";

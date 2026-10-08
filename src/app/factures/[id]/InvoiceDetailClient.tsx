@@ -8,6 +8,7 @@ import { Sidebar } from "../../../components/layout/Sidebar";
 import { Topbar } from "../../../components/layout/Topbar";
 import { InvoicePreview } from "../../../components/invoices/InvoicePreview";
 import { StatusBadge } from "../../../components/shared/StatusBadge";
+import { DeleteConfirmationModal } from "../../../components/shared/DeleteConfirmationModal";
 import { Invoice, OrganizationSettings, PaymentMethod, InvoiceStatus } from "../../../lib/domain/types";
 import { formatFCFA } from "../../../lib/format/money";
 import { formatDate } from "../../../lib/format/dates";
@@ -112,13 +113,17 @@ export default function InvoiceDetailClient({
     }
   };
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isDeletingDraft, setIsDeletingDraft] = useState(false);
+
   const handleStatusChange = async (newStatus: InvoiceStatus) => {
     const toastId = toast.loading(`Mise à jour du statut en « ${newStatus} »...`);
     try {
       const res = await updateInvoiceStatusAction(invoice.id, newStatus);
       if (res.success && res.data) {
         toast.success("Statut de la facture mis à jour avec succès !", { id: toastId });
-        setInvoice((prev) => ({ ...prev, status: newStatus }));
+        setInvoice(res.data);
+        router.refresh();
       } else {
         toast.error(res.error || "Erreur lors du changement de statut.", { id: toastId });
       }
@@ -142,10 +147,8 @@ export default function InvoiceDetailClient({
     }
   };
 
-  const handleDeleteDraft = async () => {
-    if (!confirm("Êtes-vous certain de vouloir supprimer définitivement ce brouillon ?")) {
-      return;
-    }
+  const handleConfirmDeleteDraft = async () => {
+    setIsDeletingDraft(true);
     const toastId = toast.loading("Suppression du brouillon...");
     try {
       const res = await deleteDraftInvoiceAction(invoice.id);
@@ -157,6 +160,8 @@ export default function InvoiceDetailClient({
       }
     } catch {
       toast.error("Erreur inattendue.", { id: toastId });
+    } finally {
+      setIsDeletingDraft(false);
     }
   };
 
@@ -260,7 +265,7 @@ export default function InvoiceDetailClient({
 
               {invoice.status === "draft" && (
                 <button
-                  onClick={handleDeleteDraft}
+                  onClick={() => setDeleteModalOpen(true)}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition-all hover:-translate-y-0.5 active:scale-95 dark:bg-rose-950/30 dark:border-rose-900 dark:text-rose-400"
                   title="Supprimer ce brouillon"
                 >
@@ -521,6 +526,17 @@ export default function InvoiceDetailClient({
           </div>
         </div>
       )}
+
+      {/* Accessible Deletion Modal for Drafts */}
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDeleteDraft}
+        title="Supprimer ce brouillon"
+        description="Êtes-vous certain de vouloir supprimer définitivement ce brouillon de facture ? Cette action est irréversible."
+        itemLabel={invoice.number}
+        isDeleting={isDeletingDraft}
+      />
     </div>
   );
 }

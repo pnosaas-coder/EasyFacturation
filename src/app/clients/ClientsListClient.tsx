@@ -35,6 +35,10 @@ export function ClientsListClient({ initialClients }: ClientsListClientProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  React.useEffect(() => {
+    setClients(initialClients);
+  }, [initialClients]);
+
   // New Client Form state
   const [name, setName] = useState("");
   const [contactName, setContactName] = useState("");

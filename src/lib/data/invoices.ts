@@ -1,7 +1,8 @@
 import { getStore } from "./store";
-import { Invoice, InvoiceItem, InvoiceStatus } from "../domain/types";
+import { Invoice, InvoiceItem, InvoiceStatus, Payment } from "../domain/types";
 import { InvoiceInput } from "../validation/invoice";
 import { calculateInvoiceTotals } from "../calc/invoice-totals";
+import { recalculateClientCounters } from "./clients";
 
 export interface InvoiceFilters {
   status?: string;
@@ -97,8 +98,30 @@ export async function createInvoice(input: InvoiceInput): Promise<Invoice> {
   }));
 
   const now = new Date().toISOString();
+  let initialAmountPaid = 0;
+  let initialBalanceDue = totals.balanceDue;
+  const initialPayments: Payment[] = [];
+  const invoiceId = `inv_${Date.now()}`;
+
+  if (input.status === "paid") {
+    initialAmountPaid = totals.total;
+    initialBalanceDue = 0;
+    const payment: Payment = {
+      id: `pay_${Date.now()}`,
+      invoiceId: invoiceId,
+      amount: totals.total,
+      method: "bank_transfer",
+      paidOn: input.issueDate,
+      reference: `REG-${invoiceNumber}`,
+      note: `Règlement à l'émission (${invoiceNumber})`,
+      createdAt: now,
+    };
+    initialPayments.push(payment);
+    store.payments.unshift(payment);
+  }
+
   const newInvoice: Invoice = {
-    id: `inv_${Date.now()}`,
+    id: invoiceId,
     number: invoiceNumber,
     clientId: input.clientId,
     clientName: input.clientName,
@@ -115,26 +138,20 @@ export async function createInvoice(input: InvoiceInput): Promise<Invoice> {
     discountAmount: totals.discountAmount,
     taxTotal: totals.taxTotal,
     total: totals.total,
-    amountPaid: 0,
-    balanceDue: totals.balanceDue,
+    amountPaid: initialAmountPaid,
+    balanceDue: initialBalanceDue,
     notes: input.notes,
     terms: input.terms,
     items,
-    payments: [],
+    payments: initialPayments,
     createdAt: now,
     updatedAt: now,
   };
 
   store.invoices.unshift(newInvoice);
 
-  // Update client totals if not draft
-  if (input.status !== "draft") {
-    const client = store.clients.find((c) => c.id === input.clientId);
-    if (client) {
-      client.totalBilled += newInvoice.total;
-      client.balanceDue += newInvoice.total;
-    }
-  }
+  // Synchronize client aggregates
+  recalculateClientCounters(input.clientId);
 
   return newInvoice;
 }
@@ -148,17 +165,56 @@ export async function updateInvoiceStatus(
   if (!invoice) return null;
 
   const prevStatus = invoice.status;
-  invoice.status = newStatus;
-  invoice.updatedAt = new Date().toISOString();
-
-  // If transitioning from draft to sent, update client metrics
-  if (prevStatus === "draft" && newStatus !== "draft" && newStatus !== "cancelled") {
-    const client = store.clients.find((c) => c.id === invoice.clientId);
-    if (client) {
-      client.totalBilled += invoice.total;
-      client.balanceDue += invoice.balanceDue;
-    }
+  if (prevStatus === newStatus) {
+    return invoice;
   }
+
+  const now = new Date().toISOString();
+  const today = now.split("T")[0];
+
+  if (newStatus === "paid") {
+    // 1. If invoice has unpaid balance, record payment in store.payments
+    const unpaid = invoice.total - invoice.amountPaid;
+    if (unpaid > 0) {
+      const payment: Payment = {
+        id: `pay_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        invoiceId: invoice.id,
+        amount: unpaid,
+        method: "bank_transfer",
+        paidOn: today,
+        reference: `REG-${invoice.number}`,
+        note: `Règlement intégral (${invoice.number})`,
+        createdAt: now,
+      };
+      store.payments.unshift(payment);
+    }
+    invoice.amountPaid = invoice.total;
+    invoice.balanceDue = 0;
+  } else if (newStatus === "sent" || newStatus === "overdue") {
+    // If transitioning away from paid, restore balance due
+    if (prevStatus === "paid") {
+      store.payments = store.payments.filter((p) => p.invoiceId !== invoice.id);
+      invoice.amountPaid = 0;
+      invoice.balanceDue = invoice.total;
+    }
+  } else if (newStatus === "cancelled") {
+    // Cancelled invoice: clear payments and receivables
+    store.payments = store.payments.filter((p) => p.invoiceId !== invoice.id);
+    invoice.amountPaid = 0;
+    invoice.balanceDue = 0;
+  } else if (newStatus === "draft") {
+    // Draft invoice: no payments, balance due is total
+    store.payments = store.payments.filter((p) => p.invoiceId !== invoice.id);
+    invoice.amountPaid = 0;
+    invoice.balanceDue = invoice.total;
+  }
+
+  invoice.status = newStatus;
+  invoice.updatedAt = now;
+  invoice.payments = store.payments.filter((p) => p.invoiceId === invoice.id);
+
+  // Synchronize client aggregates
+  recalculateClientCounters(invoice.clientId);
 
   return invoice;
 }
@@ -173,7 +229,10 @@ export async function deleteDraftInvoice(id: string): Promise<boolean> {
     throw new Error("Seules les factures au statut Brouillon peuvent être supprimées.");
   }
 
+  const clientId = invoice.clientId;
+  store.payments = store.payments.filter((p) => p.invoiceId !== invoice.id);
   store.invoices.splice(index, 1);
+  recalculateClientCounters(clientId);
   return true;
 }
 
@@ -183,18 +242,11 @@ export async function deleteInvoice(id: string): Promise<boolean> {
   if (index === -1) return false;
 
   const invoice = store.invoices[index];
+  const clientId = invoice.clientId;
 
-  // Adjust client counters if invoice had impact
-  if (invoice.status !== "draft" && invoice.status !== "cancelled") {
-    const client = store.clients.find((c) => c.id === invoice.clientId);
-    if (client) {
-      client.totalBilled = Math.max(0, client.totalBilled - invoice.total);
-      client.balanceDue = Math.max(0, client.balanceDue - invoice.balanceDue);
-      client.totalPaid = Math.max(0, client.totalPaid - invoice.amountPaid);
-    }
-  }
-
+  store.payments = store.payments.filter((p) => p.invoiceId !== invoice.id);
   store.invoices.splice(index, 1);
+  recalculateClientCounters(clientId);
   return true;
 }
 

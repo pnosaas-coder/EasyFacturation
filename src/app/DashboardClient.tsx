@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Sidebar } from "../components/layout/Sidebar";
 import { Topbar } from "../components/layout/Topbar";
@@ -20,6 +20,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { formatFCFA } from "../lib/format/money";
+import { computeDashboardKPIs, computeMonthlyRevenue } from "../lib/data/dashboard";
 
 interface DashboardClientProps {
   kpis: DashboardKPIs;
@@ -28,13 +29,33 @@ interface DashboardClientProps {
 }
 
 export function DashboardClient({
-  kpis,
-  monthlyRevenue,
-  invoices,
+  kpis: initialKpis,
+  monthlyRevenue: initialMonthlyRevenue,
+  invoices: initialInvoices,
 }: DashboardClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
 
-  const overdueInvoices = invoices.filter((inv) => inv.status === "overdue");
+  useEffect(() => {
+    setInvoices(initialInvoices);
+  }, [initialInvoices]);
+
+  const handleInvoiceUpdated = (updated: Invoice) => {
+    setInvoices((prev) =>
+      prev.map((inv) => (inv.id === updated.id ? updated : inv))
+    );
+  };
+
+  const handleInvoiceDeleted = (deletedId: string) => {
+    setInvoices((prev) => prev.filter((inv) => inv.id !== deletedId));
+  };
+
+  const kpis = useMemo(() => computeDashboardKPIs(invoices), [invoices]);
+  const monthlyRevenue = useMemo(() => computeMonthlyRevenue(invoices), [invoices]);
+  const overdueInvoices = useMemo(
+    () => invoices.filter((inv) => inv.status === "overdue"),
+    [invoices]
+  );
 
   return (
     <div className="flex min-h-screen bg-slate-50/60 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100">
@@ -130,7 +151,12 @@ export function DashboardClient({
               aria-labelledby="invoices-heading"
               className="xl:col-span-8 space-y-4"
             >
-              <RecentInvoicesTable invoices={invoices} isDashboard={true} />
+              <RecentInvoicesTable
+                invoices={invoices}
+                isDashboard={true}
+                onInvoiceUpdated={handleInvoiceUpdated}
+                onInvoiceDeleted={handleInvoiceDeleted}
+              />
             </section>
 
             {/* Relances rapides & alertes */}

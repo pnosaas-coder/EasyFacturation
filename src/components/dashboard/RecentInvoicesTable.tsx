@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Invoice, InvoiceStatus } from "../../lib/domain/types";
 import { formatFCFA } from "../../lib/format/money";
@@ -22,12 +23,17 @@ import {
 interface RecentInvoicesTableProps {
   invoices: Invoice[];
   isDashboard?: boolean;
+  onInvoiceUpdated?: (updated: Invoice) => void;
+  onInvoiceDeleted?: (deletedId: string) => void;
 }
 
 export function RecentInvoicesTable({
   invoices: initialInvoices,
   isDashboard = false,
+  onInvoiceUpdated,
+  onInvoiceDeleted,
 }: RecentInvoicesTableProps) {
+  const router = useRouter();
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -52,9 +58,12 @@ export function RecentInvoicesTable({
     try {
       const res = await updateInvoiceStatusAction(invoiceId, newStatus);
       if (res.success && res.data) {
+        const updatedInvoice = res.data;
         setInvoices((prev) =>
-          prev.map((inv) => (inv.id === invoiceId ? { ...inv, status: newStatus } : inv))
+          prev.map((inv) => (inv.id === invoiceId ? updatedInvoice : inv))
         );
+        onInvoiceUpdated?.(updatedInvoice);
+        router.refresh();
         toast.success(`Statut mis à jour avec succès : ${newStatus}`, { id: toastId });
       } else {
         toast.error(res.error || "Erreur lors du changement de statut", { id: toastId });
@@ -71,7 +80,10 @@ export function RecentInvoicesTable({
     try {
       const res = await deleteInvoiceAction(invoiceToDelete.id);
       if (res.success) {
-        setInvoices((prev) => prev.filter((inv) => inv.id !== invoiceToDelete.id));
+        const deletedId = invoiceToDelete.id;
+        setInvoices((prev) => prev.filter((inv) => inv.id !== deletedId));
+        onInvoiceDeleted?.(deletedId);
+        router.refresh();
         toast.success(`Facture ${invoiceToDelete.number} supprimée avec succès.`, {
           id: toastId,
         });

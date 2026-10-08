@@ -101,6 +101,15 @@ L'application répond aux réalités locales :
 * Bouton d'appoint dans la Topbar.
 * Synchronisation totale sur `document.documentElement`, `document.body`, l'attribut `data-theme` et `localStorage` (`pno_theme`).
 
+### 2.10 Dynamisme Temps Réel & Interconnexion Totale des Modules
+* **Propagation Immédiate des Changements de Statut :**
+  * Dès qu'une facture passe au statut `paid` (ex: `FAC-2026-0049` de `sent` à `paid`), le solde restant dû est soldé (`balanceDue = 0`, `amountPaid = total`), un enregistrement de règlement est créé dans `store.payments`, et les métriques du client sont instantanément recalculées via `recalculateClientCounters(clientId)`.
+  * Réciproquement, le retour à `sent` ou `overdue` annule le règlement automatique et rétablit les créances.
+* **Réactivité Instantanée du Tableau de Bord sans Rechargement :**
+  * Calculs mémorisés réactifs (`computeDashboardKPIs`, `computeMonthlyRevenue`) : les 4 cartes KPI (*CA Facturé*, *Total Encaissé*, *Solde Restant Dû*, *Factures en Retard*), le graphique `RevenueChart`, l'anneau `StatusDonutChart` et le widget WhatsApp `QuickRelanceWidget` se mettent à jour instantanément dès qu'une action est effectuée dans le tableau.
+* **Synchronisation Multi-Onglets (`/factures`, `/clients`, `/rapports`) :**
+  * Revalidation automatique Next.js (`revalidatePath` pour `/`, `/factures`, `/clients`, `/rapports`, `/devis`) combinée à `router.refresh()` et synchronisation des `props` via `useEffect` pour assurer des données fraîches et vivantes sur l'ensemble de l'application.
+
 ---
 
 ## 3. Structure des Fichiers & Architecture
@@ -256,14 +265,15 @@ Lorsque vous travaillez sur ce projet, vous devez **TOUJOURS** appliquer sans d�
 * Le taux de TVA par défaut pour le Cameroun est de **`19,25%`** (ou `0%` si exonéré).
 * Tout calcul de sous-total, taxe, remise ou reste dû doit passer par les fonctions de `src/lib/calc/money.ts` ou la librairie `big.js`.
 
-### Règle 3 : Cohérence des Statuts & Réglages Clients
-* Lors de la suppression d'une facture active (`deleteInvoice`), les compteurs du client (`totalBilled`, `totalPaid`, `balanceDue`) doivent être automatiquement réajustés pour maintenir une comptabilité saine.
+### Règle 3 : Cohérence des Statuts & Réactivité Multi-Modules
+* Tout changement de statut vers `paid` génère automatiquement le règlement, solde la facture et actualise la balance client.
+* Lors de la suppression d'une facture active (`deleteInvoice`), les compteurs du client (`totalBilled`, `totalPaid`, `balanceDue`) doivent être automatiquement recalculés de manière déterministe (`recalculateClientCounters`).
 * Les devis convertis conservent leur statut `converted` avec traçabilité vers `convertedInvoiceId`.
 
 ### Règle 4 : Qualité du Code & Validation Avant Livraison
 * Toujours exécuter `npx tsc --noEmit` après vos modifications pour vérifier qu'aucune erreur de typage TypeScript n'a été introduite.
-* Toujours exécuter `npm test` pour s'assurer que l'intégralité de la suite de tests unitaires (36 tests) continue de passer au vert.
+* Toujours exécuter `npm test` pour s'assurer que l'intégralité de la suite de tests unitaires (39 tests) continue de passer au vert.
 * Respecter la convention Tailwind v4 : ne pas créer de `tailwind.config.js` obsolète.
 
 ---
-*Dernière mise à jour : Phase 2 validée avec succès. Prêt pour l'initialisation de la Phase 3.*
+*Dernière mise à jour : Dynamisme temps réel & réactivité inter-modules validés (39 tests au vert).*
