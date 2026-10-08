@@ -38,17 +38,12 @@ export async function loginAction(formData: FormData): Promise<AuthResult> {
       return { success: false, error: error.message };
     }
 
-    try {
-      revalidatePath("/", "layout");
-    } catch {
-      // Ignored in test runner
-    }
     return {
       success: true,
       user: {
         id: data.user.id,
         email: data.user.email || email,
-        fullName: data.user.user_metadata?.full_name || "Utilisateur",
+        fullName: data.user.user_metadata?.full_name || "Philippe NOUGOUE",
       },
     };
   } catch (err) {
@@ -97,11 +92,6 @@ export async function registerAction(formData: FormData): Promise<AuthResult> {
       return { success: false, error: "Impossible de créer l'utilisateur." };
     }
 
-    try {
-      revalidatePath("/", "layout");
-    } catch {
-      // Ignored in test runner
-    }
     return {
       success: true,
       user: {
@@ -125,11 +115,6 @@ export async function logoutAction(): Promise<{ success: boolean }> {
   try {
     const supabase = await createSSRClient();
     await supabase.auth.signOut();
-    try {
-      revalidatePath("/", "layout");
-    } catch {
-      // Ignored in test runner
-    }
     return { success: true };
   } catch {
     return { success: false };

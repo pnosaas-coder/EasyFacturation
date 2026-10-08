@@ -11,11 +11,24 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 
+import { SkeletonStatCard } from "../shared/Skeleton";
+
 interface StatCardsProps {
-  kpis: DashboardKPIs;
+  kpis?: DashboardKPIs;
+  isLoading?: boolean;
 }
 
-export function StatCards({ kpis }: StatCardsProps) {
+export function StatCards({ kpis, isLoading = false }: StatCardsProps) {
+  if (isLoading || !kpis) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <SkeletonStatCard />
+        <SkeletonStatCard />
+        <SkeletonStatCard />
+        <SkeletonStatCard />
+      </div>
+    );
+  }
   const cards = [
     {
       title: "Montant facturé",

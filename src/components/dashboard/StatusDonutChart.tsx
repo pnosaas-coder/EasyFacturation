@@ -7,7 +7,8 @@ import { PieChart, CheckCircle2, Clock, Send, AlertCircle, FileEdit, Ban } from 
 import { cn } from "../../lib/utils";
 
 interface StatusDonutChartProps {
-  invoices: Invoice[];
+  invoices?: Invoice[];
+  isLoading?: boolean;
 }
 
 interface StatusSlice {
@@ -83,8 +84,35 @@ const STATUS_CONFIG: Record<
   },
 };
 
-export function StatusDonutChart({ invoices }: StatusDonutChartProps) {
+import { Skeleton, SkeletonCircle } from "../shared/Skeleton";
+
+export function StatusDonutChart({ invoices, isLoading = false }: StatusDonutChartProps) {
   const [hoveredStatus, setHoveredStatus] = useState<InvoiceStatus | null>(null);
+
+  if (isLoading || !invoices) {
+    return (
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between h-full space-y-6">
+        <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+          <Skeleton className="h-4 w-36 rounded-md" />
+          <Skeleton className="h-3 w-48 rounded-md" />
+        </div>
+        <div className="flex items-center justify-center py-4">
+          <div className="relative flex items-center justify-center">
+            <SkeletonCircle size="xl" className="h-32 w-32" />
+            <div className="absolute h-18 w-18 rounded-full bg-white dark:bg-slate-900" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Skeleton className="h-3 w-3 rounded-full" />
+              <Skeleton className="h-3 w-16 rounded-md" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   // Group invoices by status
   const statusStats = invoices.reduce<Record<InvoiceStatus, { count: number; total: number }>>(

@@ -59,8 +59,8 @@ export function LoginClient() {
         toast.error(res.error || "Erreur lors de la création de compte.");
       } else {
         toast.success("Compte créé avec succès ! Bienvenue sur EasyFacturation PRO.");
-        router.push(redirectTo);
-        router.refresh();
+        const targetUrl = redirectTo && !redirectTo.startsWith("/login") ? redirectTo : "/";
+        window.location.href = targetUrl;
       }
     } else {
       const res = await loginAction(formData);
@@ -71,8 +71,8 @@ export function LoginClient() {
         toast.error(res.error || "Erreur de connexion.");
       } else {
         toast.success(`Bienvenue, ${res.user?.fullName || "sur EasyFacturation PRO"} !`);
-        router.push(redirectTo);
-        router.refresh();
+        const targetUrl = redirectTo && !redirectTo.startsWith("/login") ? redirectTo : "/";
+        window.location.href = targetUrl;
       }
     }
   };
@@ -95,8 +95,8 @@ export function LoginClient() {
       toast.error(res.error || "Échec de la connexion rapide.");
     } else {
       toast.success("Connexion réussie : Bienvenue Philippe NOUGOUE !");
-      router.push(redirectTo);
-      router.refresh();
+      const targetUrl = redirectTo && !redirectTo.startsWith("/login") ? redirectTo : "/";
+      window.location.href = targetUrl;
     }
   };
 

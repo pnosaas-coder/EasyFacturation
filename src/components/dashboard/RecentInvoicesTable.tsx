@@ -20,21 +20,29 @@ import {
   Trash2,
 } from "lucide-react";
 
+import { SkeletonTable } from "../shared/Skeleton";
+
 interface RecentInvoicesTableProps {
-  invoices: Invoice[];
+  invoices?: Invoice[];
   isDashboard?: boolean;
+  isLoading?: boolean;
   onInvoiceUpdated?: (updated: Invoice) => void;
   onInvoiceDeleted?: (deletedId: string) => void;
 }
 
 export function RecentInvoicesTable({
-  invoices: initialInvoices,
+  invoices: initialInvoices = [],
   isDashboard = false,
+  isLoading = false,
   onInvoiceUpdated,
   onInvoiceDeleted,
 }: RecentInvoicesTableProps) {
   const router = useRouter();
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
+
+  if (isLoading || !initialInvoices || initialInvoices.length === 0 && isLoading) {
+    return <SkeletonTable rows={isDashboard ? 5 : 8} columns={5} />;
+  }
   const [activeTab, setActiveTab] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);

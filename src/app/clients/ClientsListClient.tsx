@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Sidebar } from "../../components/layout/Sidebar";
 import { Topbar } from "../../components/layout/Topbar";
@@ -29,6 +30,7 @@ interface ClientsListClientProps {
 }
 
 export function ClientsListClient({ initialClients }: ClientsListClientProps) {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [clients, setClients] = useState<Client[]>(initialClients);
   const [search, setSearch] = useState("");
@@ -71,6 +73,7 @@ export function ClientsListClient({ initialClients }: ClientsListClientProps) {
       if (res.success && res.data) {
         toast.success(`Client « ${res.data.name} » ajouté avec succès !`, { id: toastId });
         setClients([res.data, ...clients]);
+        router.refresh();
         setName("");
         setContactName("");
         setEmail("");
@@ -99,6 +102,7 @@ export function ClientsListClient({ initialClients }: ClientsListClientProps) {
       const res = await deleteClientAction(clientToDelete.id);
       if (res.success) {
         setClients((prev) => prev.filter((c) => c.id !== clientToDelete.id));
+        router.refresh();
         toast.success(`Client ${clientToDelete.name} supprimé avec succès.`, { id: toastId });
         setClientToDelete(null);
       } else {

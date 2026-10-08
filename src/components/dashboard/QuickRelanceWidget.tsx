@@ -12,11 +12,39 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { Skeleton, SkeletonCircle } from "../shared/Skeleton";
+
 interface QuickRelanceWidgetProps {
-  overdueInvoices: Invoice[];
+  overdueInvoices?: Invoice[];
+  isLoading?: boolean;
 }
 
-export function QuickRelanceWidget({ overdueInvoices }: QuickRelanceWidgetProps) {
+export function QuickRelanceWidget({ overdueInvoices = [], isLoading = false }: QuickRelanceWidgetProps) {
+  if (isLoading || !overdueInvoices) {
+    return (
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="space-y-1.5">
+            <Skeleton className="h-4 w-32 rounded-md" />
+            <Skeleton className="h-3 w-40 rounded-md" />
+          </div>
+          <SkeletonCircle size="sm" />
+        </div>
+        <div className="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="p-3 rounded-xl border border-slate-100 bg-slate-50/50 dark:border-slate-800 space-y-2">
+              <div className="flex justify-between">
+                <Skeleton className="h-3.5 w-24 rounded-md" />
+                <Skeleton className="h-3.5 w-16 rounded-md" />
+              </div>
+              <Skeleton className="h-8 w-full rounded-lg" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   const topClients = [
     { name: "Boissons du Cameroun (SABC)", city: "Douala, CM", total: 10_605_000, percentage: 88 },
     { name: "MTN Cameroon B2B", city: "Douala, CM", total: 6_984_000, percentage: 68 },

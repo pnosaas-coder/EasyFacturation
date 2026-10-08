@@ -133,6 +133,7 @@ export function QuotesListClient({
       if (res.success && res.data) {
         toast.success(`Devis ${res.data.number} créé avec succès !`, { id: toastId });
         setQuotes([res.data, ...quotes]);
+        router.refresh();
         setModalOpen(false);
       } else {
         toast.error(res.error || "Erreur lors de la création.", { id: toastId });

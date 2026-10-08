@@ -5,12 +5,46 @@ import { MonthlyRevenue } from "../../lib/domain/types";
 import { formatCompactFCFA, formatFCFA } from "../../lib/format/money";
 import { BarChart2, ArrowUpRight, ShieldCheck, DollarSign } from "lucide-react";
 
+import { Skeleton } from "../shared/Skeleton";
+
 interface RevenueChartProps {
-  data: MonthlyRevenue[];
+  data?: MonthlyRevenue[];
+  isLoading?: boolean;
 }
 
-export function RevenueChart({ data }: RevenueChartProps) {
-  const [activeMonth, setActiveMonth] = useState<string | null>(data[data.length - 1]?.month || null);
+export function RevenueChart({ data, isLoading = false }: RevenueChartProps) {
+  const [activeMonth, setActiveMonth] = useState<string | null>(
+    data && data.length > 0 ? data[data.length - 1]?.month : null
+  );
+
+  if (isLoading || !data || data.length === 0) {
+    return (
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between h-full space-y-6">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="space-y-1.5">
+            <Skeleton className="h-4 w-44 rounded-md" />
+            <Skeleton className="h-3 w-56 rounded-md" />
+          </div>
+          <Skeleton className="h-6 w-24 rounded-lg" />
+        </div>
+        <div className="flex items-end justify-between gap-4 h-40 pt-4 px-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="flex flex-col items-center gap-2 flex-1">
+              <div className="flex items-end gap-1 w-full justify-center">
+                <Skeleton className="w-3 rounded-t-sm h-24" />
+                <Skeleton className="w-3 rounded-t-sm h-16" />
+              </div>
+              <Skeleton className="h-3 w-8 rounded-xs" />
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between pt-2">
+          <Skeleton className="h-3.5 w-28 rounded-md" />
+          <Skeleton className="h-3.5 w-28 rounded-md" />
+        </div>
+      </div>
+    );
+  }
 
   const maxVal = Math.max(...data.flatMap((d) => [d.invoiced, d.collected]), 20_000_000);
 

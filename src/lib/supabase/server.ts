@@ -24,7 +24,15 @@ export async function createSSRClient() {
         return nextCookies.getAll();
       },
       set(name, value, options) {
-        nextCookies.set(name, value, options as never);
+        try {
+          if (options && typeof options === "object") {
+            nextCookies.set({ name, value, ...(options as Record<string, unknown>) });
+          } else {
+            nextCookies.set(name, value);
+          }
+        } catch {
+          // Peut arriver dans les Server Components sans droits d'écriture de cookie
+        }
       },
     };
   } catch {

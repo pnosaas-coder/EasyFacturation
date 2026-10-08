@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Sidebar } from "../../components/layout/Sidebar";
 import { Topbar } from "../../components/layout/Topbar";
@@ -25,6 +26,7 @@ interface ProductsListClientProps {
 }
 
 export function ProductsListClient({ initialProducts }: ProductsListClientProps) {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,6 +72,7 @@ export function ProductsListClient({ initialProducts }: ProductsListClientProps)
           id: toastId,
         });
         setProducts([res.data, ...products]);
+        router.refresh();
         setName("");
         setDescription("");
         setUnitPrice(250_000);
@@ -97,6 +100,7 @@ export function ProductsListClient({ initialProducts }: ProductsListClientProps)
       if (res.success) {
         toast.success(`Référence « ${productToDelete.name} » supprimée avec succès.`, { id: toastId });
         setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
+        router.refresh();
         setProductToDelete(null);
       } else {
         toast.error(res.error || "Erreur lors de la suppression.", { id: toastId });

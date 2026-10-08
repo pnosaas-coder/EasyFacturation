@@ -44,8 +44,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       setLoggingOut(true);
       await logoutAction();
       toast.success("Vous avez été déconnecté avec succès.");
-      router.push("/login");
-      router.refresh();
+      window.location.href = "/login";
     } catch {
       toast.error("Erreur lors de la déconnexion.");
     } finally {

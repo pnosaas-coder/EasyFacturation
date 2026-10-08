@@ -142,9 +142,26 @@ L'application répond aux réalités locales :
   * Interception globale de toutes les routes de l'application (`/`, `/factures/*`, `/devis/*`, `/clients/*`, `/produits/*`, `/recurrentes/*`, `/rapports/*`, `/parametres/*`).
   * Redirection automatique des requêtes non authentifiées vers `/login?redirectTo=...`.
   * Redirection automatique des utilisateurs déjà connectés accédant à `/login` vers la page d'accueil (`/`).
-* **Gestion des Sessions & Déconnexion (`@supabase/ssr`) :**
+* **Gestion des Sessions, Déconnexion & Middleware (`@supabase/ssr`) :**
   * Gestion déclarative des cookies de session chiffrés pour les Server Components et Server Actions.
   * Bouton de déconnexion ergonomique avec icône `LogOut` intégré directement à la carte profil du gérant dans la barre latérale (`Sidebar`).
+* **Règle vitale Middleware / Server Actions :** Dans Next.js App Router (Turbopack), le middleware ne doit JAMAIS intercepter ou rediriger les requêtes de Server Actions (`request.headers.has("next-action")` ou méthode `POST`). Une redirection HTTP (307) sur une action renvoie un code inattendu au client RSC causant l'erreur `An unexpected response was received from the server`. Les redirections HTTP GET préservent et transfèrent tous les cookies rafraîchis par Supabase sur `redirectResponse.cookies`.
+
+### 2.13 Skeletons Loaders & Expérience Utilisateur Zéro-Attente
+* **Animation Shimmer Haute Précision :**
+  * Implémentation d'une animation `@keyframes shimmer` et classe `.animate-shimmer` dans `globals.css` avec balayage lumineux fluide clair/sombre.
+  * Composants modulaires dans `src/components/shared/Skeleton.tsx` : `Skeleton`, `SkeletonText`, `SkeletonCircle`, `SkeletonBadge`, `SkeletonStatCard`, `SkeletonTable`.
+* **Streaming Suspense Next.js App Router (`loading.tsx`) :**
+  * `src/app/loading.tsx` : Skeleton miroir du Tableau de bord (bannière, 4 cartes KPI, histogramme, donut, table et widget relance).
+  * `src/app/factures/loading.tsx` : Skeleton de la liste des factures (résumé financier, barre de filtres, table 8 lignes).
+  * `src/app/clients/loading.tsx` : Grille skeleton de 6 fiches clients complètes avec avatars et métriques.
+  * `src/app/devis/loading.tsx` : Skeleton des propositions commerciales et conversion.
+  * `src/app/produits/loading.tsx` : Skeleton du catalogue prestations et tarifs FCFA.
+  * `src/app/recurrentes/loading.tsx` : Skeleton des abonnements périodiques.
+  * `src/app/rapports/loading.tsx` : Skeleton des déclarations de TVA et encaissements.
+  * `src/app/parametres/loading.tsx` : Skeleton des coordonnées légales NIU/RCCM et banques.
+* **Mise à Jour Instantanée Zéro-F5 (Zéro Actualisation Forcée) :**
+  * Tous les composants clients (`ClientsListClient`, `QuotesListClient`, `ProductsListClient`, `InvoicesListClient`, `DashboardClient`) mettent à jour leur état local immédiatement dès confirmation de l'action serveur, combiné à un rafraîchissement d'arrière-plan `router.refresh()`. L'utilisateur voit instantanément le changement sans jamais avoir à forcer l'actualisation de la page.
 
 ---
 
