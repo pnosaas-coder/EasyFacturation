@@ -210,9 +210,14 @@ PNO-Facture-Pro/
 │       ├── reactivity.test.ts               # Tests dynamisme temps réel inter-modules
 │       ├── store-dal.test.ts                # Tests DAL en mémoire (CRUD, suppression, conversion)
 │       └── supabase-dal.test.ts             # Tests DAL Supabase et adapters bidirectionnels
+├── public/
+│   ├── favicon.ico                          # Favicon Windows ICO 32x32 RGBA
+│   └── icon.svg                             # Favicon vectoriel Retina/HiDPI SVG
 ├── src/
 │   ├── app/                                 # Next.js App Router (Pages & Routes)
-│   │   ├── layout.tsx                       # Layout racine (HTML, polices, ThemeProvider, Toaster)
+│   │   ├── layout.tsx                       # Layout racine (HTML, polices, favicons, ThemeProvider)
+│   │   ├── icon.svg                         # Favicon automatique App Router (SVG)
+│   │   ├── favicon.ico                      # Favicon automatique App Router (ICO)
 │   │   ├── globals.css                      # Tailwind v4, variables CSS clair/sombre, styles d'impression
 │   │   ├── page.tsx                         # Landing Page publique d'entrée du SaaS
 │   │   ├── dashboard/
