@@ -42,9 +42,10 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/register");
+  const isPublicPage = pathname === "/" || isAuthPage;
 
   // Si l'utilisateur n'est pas connecté et tente d'accéder à une page protégée
-  if (!user && !isAuthPage) {
+  if (!user && !isPublicPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirectTo", pathname);
@@ -59,7 +60,7 @@ export async function middleware(request: NextRequest) {
   // Si l'utilisateur est déjà connecté et tente d'accéder à la page de connexion
   if (user && isAuthPage) {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = "/dashboard";
     url.search = ""; // Éliminer les résidus de redirectTo pour une URL propre
     const redirectResponse = NextResponse.redirect(url);
     // Transférer les cookies gérés par Supabase sur la réponse de redirection

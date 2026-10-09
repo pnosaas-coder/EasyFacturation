@@ -30,6 +30,7 @@ export async function createInvoiceAction(input: unknown): Promise<ActionResult<
 
     const newInvoice = await createInvoice(parsed.data);
     revalidatePath("/");
+    revalidatePath("/dashboard");
     revalidatePath("/factures");
     revalidatePath("/clients");
     revalidatePath("/rapports");
@@ -50,6 +51,7 @@ export async function updateInvoiceStatusAction(
       return { success: false, error: "Facture introuvable." };
     }
     revalidatePath("/");
+    revalidatePath("/dashboard");
     revalidatePath("/factures");
     revalidatePath(`/factures/${id}`);
     revalidatePath("/clients");
@@ -65,6 +67,7 @@ export async function deleteDraftInvoiceAction(id: string): Promise<ActionResult
   try {
     const deleted = await deleteDraftInvoice(id);
     revalidatePath("/");
+    revalidatePath("/dashboard");
     revalidatePath("/factures");
     revalidatePath("/clients");
     revalidatePath("/rapports");
@@ -82,6 +85,7 @@ export async function deleteInvoiceAction(id: string): Promise<ActionResult<bool
       return { success: false, error: "Facture introuvable." };
     }
     revalidatePath("/");
+    revalidatePath("/dashboard");
     revalidatePath("/factures");
     revalidatePath("/clients");
     revalidatePath("/rapports");

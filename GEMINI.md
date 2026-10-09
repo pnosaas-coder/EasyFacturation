@@ -163,6 +163,29 @@ L'application répond aux réalités locales :
 * **Mise à Jour Instantanée Zéro-F5 (Zéro Actualisation Forcée) :**
   * Tous les composants clients (`ClientsListClient`, `QuotesListClient`, `ProductsListClient`, `InvoicesListClient`, `DashboardClient`) mettent à jour leur état local immédiatement dès confirmation de l'action serveur, combiné à un rafraîchissement d'arrière-plan `router.refresh()`. L'utilisateur voit instantanément le changement sans jamais avoir à forcer l'actualisation de la page.
 
+### 2.14 Landing Page Haute Performance, Mobile-First & Point d'Entrée SaaS (`/`)
+* **Nouvelle Architecture de Routage :**
+  * La route racine **`/`** devient la **Landing Page publique** de présentation et de conversion, ouverte à tous les visiteurs et indexable par les moteurs de recherche (SEO).
+  * L'espace applicatif du Tableau de bord bascule sur **`/dashboard`** (Server Component avec streaming Suspense et skeleton complet dans `/dashboard/loading.tsx`).
+  * Les utilisateurs non connectés naviguent librement sur `/`, et sont redirigés vers `/login` uniquement lorsqu'ils tentent d'accéder à `/dashboard` ou à un module métier (`/factures`, `/devis`, `/clients`, etc.).
+  * La connexion (`LoginClient`) redirige automatiquement et proprement vers `/dashboard`.
+* **Composants Modulaires & Réutilisables (`src/components/landing/`) :**
+  * `LandingHeader` : Barre de navigation sticky en verre dépoli (`landing-glass-nav`) avec détection de défilement, logo animé, liens d'ancrage, bouton connexion et menu tiroir mobile responsive (*hamburger drawer*) avec fermeture tactile.
+  * `LandingHero` : En-tête percutant avec pilule d'annonce animée, titre typographique avec accent SVG courbé, double bouton CTA et aperçu complet.
+  * `HeroDashboardPreview` : Maquette interactive du tableau de bord sombre de Prunus Engineering SARL avec les 4 KPI FCFA réels, histogramme comparatif 6 mois, calcul de TVA 19,25% DGI et **badges micro-animés flottants** (`@keyframes landingFloatSlow` et `landingFloatReverse`) pour les paiements MoMo (+250 000 FCFA) et relances WhatsApp en 1 clic.
+  * `LandingLogoCloud` : Répertoire d'entreprises partenaires africaines de confiance (Kemet Studio, Baobab Tech, Sahel Consulting, Teranga Media, Palm Capital).
+  * `LandingProblems` : 3 cartes de constats et points de douleur (Factures artisanales décrédibilisantes, casse-tête fiscal TVA, et stagnation des impayés).
+  * `LandingFeatures` : 4 cartes fonctionnalités majeures avec badges de réassurance (Factures PDF OHADA, TVA 19,25% / 18%, Relances WhatsApp, Répertoire clients & Devis convertibles en 1 clic).
+  * `LandingHowItWorks` : 3 étapes simples sur fond sombre (#0B111E) avec lueur d'ambiance bleue et teal (Inscription 30s, Création en FCFA, Envoi & Encaissement).
+  * `LandingTestimonials` : 3 avis authentiques de dirigeants de Douala (🇨🇲), Dakar (🇸🇳) et Abidjan (🇨🇮) avec notation 5 étoiles dorées.
+  * `LandingPricing` : Grille tarifaire claire en **Francs CFA** (Gratuit 0 FCFA, Plan Pro vedette 5 000 FCFA/mois avec mise en avant lumineuse et badge Recommandé, Business 15 000 FCFA/mois).
+  * `LandingCtaBanner` : Bannière de conversion finale en dégradé bleu royal et nuit avec déclencheur direct d'inscription.
+  * `LandingFooter` : Pied de page structuré avec mentions OHADA, coordonnées officielles Prunus Engineering SARL (`contact@prunus-engineering.cm`), support WhatsApp et couverture régionale CEMAC & UEMOA.
+* **Feuille de Style Dédiée & Micro-Animations (`src/components/landing/landing.css`) :**
+  * Zéro style inline : tous les effets, transitions et animations sont centralisés dans `landing.css`.
+  * Animation interactive du bouton CTA principal (`.landing-btn-cta-primary`) : balayage lumineux continu (*shimmer beam*), élévation et halo de lueur au survol (*hover*), et compression élastique dynamique au clic (*active/click spring squeeze*).
+  * Conception Mobile-First : typographie fluide, adaptation automatique sur smartphone, tablette et écran large.
+
 ---
 
 ## 3. Structure des Fichiers & Architecture
@@ -191,7 +214,10 @@ PNO-Facture-Pro/
 │   ├── app/                                 # Next.js App Router (Pages & Routes)
 │   │   ├── layout.tsx                       # Layout racine (HTML, polices, ThemeProvider, Toaster)
 │   │   ├── globals.css                      # Tailwind v4, variables CSS clair/sombre, styles d'impression
-│   │   ├── page.tsx                         # Page d'accueil (Server Component Dashboard)
+│   │   ├── page.tsx                         # Landing Page publique d'entrée du SaaS
+│   │   ├── dashboard/
+│   │   │   ├── page.tsx                     # Tableau de bord SaaS (Server Component protégé)
+│   │   │   └── loading.tsx                  # Skeleton streaming du tableau de bord
 │   │   ├── DashboardClient.tsx              # Composant Client Dashboard (KPIs, Charts, Table)
 │   │   ├── factures/
 │   │   │   ├── page.tsx                     # Liste des factures (Server Component)

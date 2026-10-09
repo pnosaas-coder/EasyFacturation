@@ -65,6 +65,7 @@ export async function deleteClientAction(id: string): Promise<ActionResult<boole
     revalidatePath("/clients");
     revalidatePath("/factures");
     revalidatePath("/");
+    revalidatePath("/dashboard");
     return { success: true, data: true };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Erreur lors de la suppression du client.";

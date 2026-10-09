@@ -1,0 +1,229 @@
+/* ==========================================================================
+   EasyFacturation PRO — Landing Page Stylesheet (landing.css)
+   Conçu sans style inline, responsive mobile-first et micro-animations riches
+   ========================================================================== */
+
+/* Isolation et typographie de base */
+.landing-page {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #1E293B;
+  background-color: #FAFAFC;
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.landing-text-balance {
+  text-wrap: balance;
+}
+
+/* --------------------------------------------------------------------------
+   Navigation Glassmorphism & Header
+   -------------------------------------------------------------------------- */
+.landing-glass-nav {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.landing-glass-nav-scrolled {
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+  border-color: rgba(226, 232, 240, 0.95);
+}
+
+/* Badge Glow Header & Pills */
+.landing-badge-glow {
+  box-shadow: 0 0 20px -2px rgba(0, 98, 255, 0.22);
+  transition: all 0.25s ease;
+}
+
+.landing-badge-glow:hover {
+  box-shadow: 0 0 24px -1px rgba(0, 98, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   CTA Principal avec Animations Hover & Click (Survol et Clic interactif)
+   -------------------------------------------------------------------------- */
+.landing-btn-cta-primary {
+  position: relative;
+  overflow: hidden;
+  background-color: #0062FF;
+  color: #FFFFFF;
+  font-weight: 700;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 25px -5px rgba(0, 98, 255, 0.35), 0 4px 10px -2px rgba(0, 98, 255, 0.2);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Effet de reflet lumineux (Shimmer sweep continu / on-hover) */
+.landing-btn-cta-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 100%
+  );
+  transition: left 0.75s ease;
+  pointer-events: none;
+}
+
+/* On Hover : Élévation, lueur rayonnante et reflet */
+.landing-btn-cta-primary:hover {
+  background-color: #0052D6;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px -5px rgba(0, 98, 255, 0.5), 0 6px 15px -2px rgba(0, 98, 255, 0.3);
+}
+
+.landing-btn-cta-primary:hover::before {
+  left: 100%;
+}
+
+/* On Click / Active : Spring squeeze tactile */
+.landing-btn-cta-primary:active {
+  transform: scale(0.96) translateY(0);
+  box-shadow: 0 4px 14px 0 rgba(0, 98, 255, 0.3);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+/* CTA Secondaire */
+.landing-btn-cta-secondary {
+  background-color: #FFFFFF;
+  color: #334155;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.landing-btn-cta-secondary:hover {
+  background-color: #F8FAFC;
+  color: #0F172A;
+  border-color: #94A3B8;
+  transform: translateY(-1.5px);
+  box-shadow: 0 8px 20px -5px rgba(15, 23, 42, 0.06);
+}
+
+.landing-btn-cta-secondary:active {
+  transform: scale(0.97) translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   Micro-Animations Flottantes (Floating Badges & Glow)
+   -------------------------------------------------------------------------- */
+@keyframes landingFloatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes landingFloatReverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(8px) rotate(-1deg);
+  }
+}
+
+@keyframes landingGlowPulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.landing-float-badge-top {
+  animation: landingFloatSlow 6s ease-in-out infinite;
+}
+
+.landing-float-badge-bottom {
+  animation: landingFloatReverse 7s ease-in-out infinite;
+}
+
+.landing-glow-ambient {
+  animation: landingGlowPulse 8s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Cartes & Conteneurs Interactifs
+   -------------------------------------------------------------------------- */
+.landing-card-soft {
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.landing-card-soft:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.1);
+  border-color: rgba(0, 98, 255, 0.3);
+}
+
+.landing-card-featured {
+  border-color: #0062FF;
+  box-shadow: 0 0 45px -10px rgba(0, 98, 255, 0.35);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.landing-card-featured:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 50px -5px rgba(0, 98, 255, 0.45);
+}
+
+/* --------------------------------------------------------------------------
+   Menu Mobile Déroulant & Responsive
+   -------------------------------------------------------------------------- */
+@keyframes landingDrawerSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-mobile-drawer {
+  animation: landingDrawerSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* --------------------------------------------------------------------------
+   Ombres & Styles Dashboard Dark Preview
+   -------------------------------------------------------------------------- */
+.landing-dashboard-shadow {
+  box-shadow: 0 25px 60px -15px rgba(2, 6, 23, 0.45);
+}
+
+/* Barres de diagramme interactives */
+.landing-bar-element {
+  transition: height 0.4s ease, background-color 0.2s ease;
+}
+
+.landing-bar-element:hover {
+  filter: brightness(1.15);
+}
+
+/* Masquer les barres de défilement tout en gardant le scroll fluide */
+.landing-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.landing-no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -57,6 +57,7 @@ export async function convertQuoteToInvoiceAction(quoteId: string): Promise<Acti
     revalidatePath("/devis");
     revalidatePath("/factures");
     revalidatePath("/");
+    revalidatePath("/dashboard");
     revalidatePath("/clients");
     return { success: true, data: invoice };
   } catch (err: unknown) {

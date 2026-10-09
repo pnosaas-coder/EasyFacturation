@@ -26,6 +26,7 @@ export async function recordPaymentAction(
 
     const result = await recordPayment(parsed.data);
     revalidatePath("/");
+    revalidatePath("/dashboard");
     revalidatePath("/factures");
     revalidatePath(`/factures/${parsed.data.invoiceId}`);
     revalidatePath("/clients");

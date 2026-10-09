@@ -25,10 +25,12 @@ import { useTheme } from "../../components/shared/ThemeProvider";
 export function LoginClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/";
+  const rawRedirect = searchParams.get("redirectTo");
+  const modeParam = searchParams.get("mode");
+  const redirectTo = rawRedirect && !rawRedirect.startsWith("/login") && rawRedirect !== "/" ? rawRedirect : "/dashboard";
 
   const { theme, toggleTheme } = useTheme();
-  const [tab, setTab] = useState<"login" | "register">("login");
+  const [tab, setTab] = useState<"login" | "register">(modeParam === "register" ? "register" : "login");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -59,8 +61,7 @@ export function LoginClient() {
         toast.error(res.error || "Erreur lors de la création de compte.");
       } else {
         toast.success("Compte créé avec succès ! Bienvenue sur EasyFacturation PRO.");
-        const targetUrl = redirectTo && !redirectTo.startsWith("/login") ? redirectTo : "/";
-        window.location.href = targetUrl;
+        window.location.href = redirectTo;
       }
     } else {
       const res = await loginAction(formData);
@@ -71,8 +72,7 @@ export function LoginClient() {
         toast.error(res.error || "Erreur de connexion.");
       } else {
         toast.success(`Bienvenue, ${res.user?.fullName || "sur EasyFacturation PRO"} !`);
-        const targetUrl = redirectTo && !redirectTo.startsWith("/login") ? redirectTo : "/";
-        window.location.href = targetUrl;
+        window.location.href = redirectTo;
       }
     }
   };
@@ -95,8 +95,7 @@ export function LoginClient() {
       toast.error(res.error || "Échec de la connexion rapide.");
     } else {
       toast.success("Connexion réussie : Bienvenue Philippe NOUGOUE !");
-      const targetUrl = redirectTo && !redirectTo.startsWith("/login") ? redirectTo : "/";
-      window.location.href = targetUrl;
+      window.location.href = redirectTo;
     }
   };
 

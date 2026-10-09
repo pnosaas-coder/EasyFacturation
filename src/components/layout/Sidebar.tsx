@@ -55,7 +55,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const menuItems = [
     {
       title: "Tableau de bord",
-      href: "/",
+      href: "/dashboard",
       icon: LayoutDashboard,
       badge: null,
     },
@@ -119,7 +119,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Logo Brand */}
           <div className="flex items-center justify-between px-2">
             <Link
-              href="/"
+              href="/dashboard"
               className="flex items-center gap-3 group transition-transform duration-200 hover:scale-102"
             >
               <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-700 to-blue-500 text-white shadow-md shadow-blue-500/25 ring-2 ring-blue-500/20 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-500/40 group-hover:ring-blue-500/40">
