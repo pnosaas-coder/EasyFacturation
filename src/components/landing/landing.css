@@ -227,3 +227,80 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* --------------------------------------------------------------------------
+   Bandeau Défilant Continu (Infinite Marquee Logo Cloud)
+   -------------------------------------------------------------------------- */
+.landing-marquee-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 0.85rem 0;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 7%,
+    black 93%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 7%,
+    black 93%,
+    transparent 100%
+  );
+}
+
+.landing-marquee-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 3.5rem;
+  animation: landingMarqueeScroll 28s linear infinite;
+  will-change: transform;
+}
+
+.landing-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes landingMarqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.landing-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 700;
+  color: #334155;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  opacity: 0.78;
+  transition: all 0.25s ease;
+  user-select: none;
+  cursor: default;
+}
+
+.landing-marquee-item:hover {
+  opacity: 1;
+  color: #0F172A;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .landing-marquee-track {
+    gap: 2.25rem;
+    animation-duration: 22s;
+  }
+  .landing-marquee-item {
+    font-size: 0.8125rem;
+  }
+}

@@ -4,6 +4,7 @@ import { LandingHeader } from "../../src/components/landing/LandingHeader";
 import { LandingHero } from "../../src/components/landing/LandingHero";
 import { HeroDashboardPreview } from "../../src/components/landing/HeroDashboardPreview";
 import { LandingPricing } from "../../src/components/landing/LandingPricing";
+import { LandingLogoCloud } from "../../src/components/landing/LandingLogoCloud";
 import { LandingFeatures } from "../../src/components/landing/LandingFeatures";
 import { LandingProblems } from "../../src/components/landing/LandingProblems";
 import { LandingHowItWorks } from "../../src/components/landing/LandingHowItWorks";
@@ -16,6 +17,7 @@ describe("Landing Page — Architecture & Composants Reutilisables", () => {
     expect(LandingHeader).toBeDefined();
     expect(LandingHero).toBeDefined();
     expect(HeroDashboardPreview).toBeDefined();
+    expect(LandingLogoCloud).toBeDefined();
     expect(LandingPricing).toBeDefined();
     expect(LandingFeatures).toBeDefined();
     expect(LandingProblems).toBeDefined();
@@ -28,5 +30,10 @@ describe("Landing Page — Architecture & Composants Reutilisables", () => {
   it("vérifie que les tarifs en Francs CFA (FCFA) et plans sont configurés", () => {
     const pricingElement = LandingPricing();
     expect(pricingElement).toBeDefined();
+  });
+
+  it("vérifie que le bandeau de défilement des logos partenaires (Marquee) est actif", () => {
+    const logoCloudElement = LandingLogoCloud();
+    expect(logoCloudElement).toBeDefined();
   });
 });

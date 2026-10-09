@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ShieldCheck,
@@ -11,6 +12,7 @@ import {
   User,
   Building2,
   ArrowRight,
+  ArrowLeft,
   Sparkles,
   Loader2,
   Sun,
@@ -130,16 +132,34 @@ export function LoginClient() {
 
       {/* Main card */}
       <div className="relative z-10 w-full max-w-md">
-        <div className="rounded-3xl border border-slate-200/90 bg-white/90 p-8 shadow-2xl backdrop-blur-2xl transition-all duration-300 dark:border-slate-800/80 dark:bg-slate-900/90 sm:p-10">
-          {/* Header & Logo */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/30 mb-4 transition-transform duration-200 hover:scale-105">
-              <ShieldCheck className="h-8 w-8" />
-            </div>
+        {/* Discrete back to landing page button */}
+        <div className="mb-3">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors group px-1 py-1"
+            title="Revenir sur la page de présentation"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-150 group-hover:-translate-x-1" />
+            <span>← Retour à l'accueil</span>
+          </Link>
+        </div>
 
-            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              EasyFacturation <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">PRO</span>
-            </h1>
+        <div className="rounded-3xl border border-slate-200/90 bg-white/90 p-8 shadow-2xl backdrop-blur-2xl transition-all duration-300 dark:border-slate-800/80 dark:bg-slate-900/90 sm:p-10">
+          {/* Header & Logo (Cliquable vers la landing page) */}
+          <div className="text-center mb-8">
+            <Link
+              href="/"
+              title="Retour à la page d'accueil EasyFacturation PRO"
+              className="group inline-flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-[1.02] active:scale-95"
+            >
+              <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/30 mb-4 transition-all duration-200 group-hover:scale-105 group-hover:shadow-blue-600/50">
+                <ShieldCheck className="h-8 w-8" />
+              </div>
+
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                EasyFacturation <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">PRO</span>
+              </h1>
+            </Link>
 
             <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
               Plateforme SaaS pour entrepreneurs • Cameroun & CEMAC

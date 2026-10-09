@@ -57,18 +57,9 @@ export async function middleware(request: NextRequest) {
     return redirectResponse;
   }
 
-  // Si l'utilisateur est déjà connecté et tente d'accéder à la page de connexion
-  if (user && isAuthPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    url.search = ""; // Éliminer les résidus de redirectTo pour une URL propre
-    const redirectResponse = NextResponse.redirect(url);
-    // Transférer les cookies gérés par Supabase sur la réponse de redirection
-    supabaseResponse.cookies.getAll().forEach((cookie) => {
-      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
-    });
-    return redirectResponse;
-  }
+  // Note: On ne redirige plus automatiquement un utilisateur connecté vers /dashboard
+  // lorsqu'il visite explicitement /login, afin de lui permettre de voir l'écran de connexion,
+  // de changer de compte ou de revenir sur la landing page.
 
   return supabaseResponse;
 }
